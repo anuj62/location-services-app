@@ -1,3 +1,3 @@
 LocationApp
 ===========
-Shows GPS readings, Accelerometer readings.
+Shows GPS readings, accelerometer readings.
