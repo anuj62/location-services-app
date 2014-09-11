@@ -1,5 +1,7 @@
 package edu.buffalo.cse.locationapp;
 
+import java.util.Timer;
+
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -9,7 +11,9 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +24,11 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 LocationManager lm;
 Sensor mAccelerometerSensor;
 SensorManager sm;
+WifiManager wm;
+ScheduledScan wifiScan;
+
+int TIMER_PERIOD = 2000; 
+
 TextView tvGps, tvAccX, tvAccY, tvAccZ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,11 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ;
         sm = (SensorManager)this.getSystemService(SENSOR_SERVICE);
         mAccelerometerSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); 
         sm.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        
+        Handler handler = new Handler();
+        wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
+        wifiScan = new ScheduledScan(wm, handler);
+        handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
     }
     
     @Override
