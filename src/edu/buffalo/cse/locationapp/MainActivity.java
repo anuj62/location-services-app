@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ ScheduledScan wifiScan;
 
 int TIMER_PERIOD = 2000; 
 
-TextView tvGps, tvAccX, tvAccY, tvAccZ;
+TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +39,7 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ;
         tvAccX = (TextView)this.findViewById(R.id.xcoor);
         tvAccY = (TextView)this.findViewById(R.id.ycoor);
         tvAccZ = (TextView)this.findViewById(R.id.zcoor);
+        tvWifi = (TextView)this.findViewById(R.id.wifidata);
         
         lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0.0f, this);
@@ -46,10 +48,15 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ;
         mAccelerometerSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); 
         sm.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         
-        Handler handler = new Handler();
+        Handler handler = new Handler(){
+        	public void handleMessage(Message msg){
+        		tvWifi.setText(msg.getData().getString("ListSize"));
+        	}
+        };
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
         wifiScan = new ScheduledScan(wm, handler);
         handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+        
     }
     
     @Override
@@ -76,7 +83,7 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ;
 	public void onLocationChanged(Location location) {
 		// TODO Auto-generated method stub
 		Log.v("LocationApp","Location updated");
-		tvGps.setText(location.getLatitude()+", "+location.getLongitude());
+		tvGps.setText("Location:"+location.getLatitude()+", "+location.getLongitude());
 	}
 
 

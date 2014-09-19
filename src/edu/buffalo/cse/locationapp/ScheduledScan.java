@@ -5,7 +5,9 @@ import java.util.List;
 
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 /**
@@ -25,6 +27,7 @@ public class ScheduledScan implements Runnable {
 	public ScheduledScan(WifiManager wm, Handler handler) {
 		this.wm = wm;
 		this.handler = handler;
+		
 	}
 	
 	@Override
@@ -46,6 +49,11 @@ public class ScheduledScan implements Runnable {
 			
 			scanResult = wm.getScanResults();
 			Log.v("LocationApp", Integer.toString(scanResult.size()));
+			Message msg = this.handler.obtainMessage();
+			Bundle bundle = new Bundle();
+			bundle.putString("ListSize", "Scan Result: "+scanResult.size());
+			msg.setData(bundle);
+			this.handler.sendMessage(msg);
 		}
 		
 		return scanResult;
