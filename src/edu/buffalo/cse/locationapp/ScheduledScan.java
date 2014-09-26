@@ -20,6 +20,7 @@ public class ScheduledScan implements Runnable {
 	public ScheduledScan(WifiManager wm, Handler handler) {
 		this.wm = wm;
 		this.handler = handler;
+		
 	}
 	@Override
 	public void run() {
