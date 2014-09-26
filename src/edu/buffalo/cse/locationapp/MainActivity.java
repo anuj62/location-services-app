@@ -1,5 +1,6 @@
 package edu.buffalo.cse.locationapp;
 
+import java.util.List;
 import java.util.Timer;
 
 import android.app.Activity;
@@ -11,6 +12,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,12 +22,13 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 
-public class MainActivity extends Activity implements LocationListener, SensorEventListener{
+public class MainActivity extends Activity implements LocationListener, SensorEventListener, OnTaskCompleted{
 LocationManager lm;
 Sensor mAccelerometerSensor;
 SensorManager sm;
 WifiManager wm;
 ScheduledScan wifiScan;
+OnTaskCompleted listener;
 
 int TIMER_PERIOD = 2000; 
 
@@ -48,7 +51,7 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ;
         
         Handler handler = new Handler();
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
-        wifiScan = new ScheduledScan(wm, handler);
+        wifiScan = new ScheduledScan(wm, handler, listener);
         handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
     }
     
@@ -111,11 +114,19 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ;
 			tvAccZ.setText("Acc. in Z: " + event.values[2]);
 		}
 	}
+	
+	
 
 
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onTaskCompleted() {
+		List<ScanResult> scanResults = wifiScan.getScanResults();
+		Log.v("LocationApp", Integer.toString(scanResults.size()) + " should be printed now.");
 	}
 }
