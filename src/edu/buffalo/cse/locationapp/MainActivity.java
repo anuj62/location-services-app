@@ -57,7 +57,7 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
         	}
         };
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
-        wifiScan = new ScheduledScan(wm, handler, listener);
+        wifiScan = new ScheduledScan(wm, handler);
         handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
         
     }

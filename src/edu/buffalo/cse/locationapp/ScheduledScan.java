@@ -31,6 +31,7 @@ public class ScheduledScan implements Runnable {
 	public List<ScanResult> getScanResults() {
 		return scanResults;
 	}
+	
 	private List<ScanResult> scanRSSI() {
 		List<ScanResult> scanResult = new ArrayList<ScanResult>();
 		if (wm.startScan()) {
@@ -39,10 +40,23 @@ public class ScheduledScan implements Runnable {
 			Message msg = this.handler.obtainMessage();
 			Bundle bundle = new Bundle();
 			bundle.putString("ListSize", "Scan Result: "+scanResult.size());
+			bundle.putString("ListSize", "Wifi622 Signal Strenth: " + printInfo(scanResult));
 			msg.setData(bundle);
 			this.handler.sendMessage(msg);
 		}
 		return scanResult;
+	}
+	
+	private String printInfo(List<ScanResult> scanInfo) {
+		StringBuilder printScan = new StringBuilder();
+		
+		for (int i = 0; i < scanInfo.size(); i++ ) {
+			printScan.append(i + ": " +scanInfo.get(i).SSID + " " + scanInfo.get(i).BSSID +
+					" " + scanInfo.get(i).level + "\t");
+		}
+		
+		return printScan.toString();
+			
 	}
 	public int getRepeatTime() {
 		return repeatTime;
