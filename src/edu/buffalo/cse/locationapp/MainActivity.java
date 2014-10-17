@@ -5,6 +5,8 @@ import java.util.Timer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,6 +22,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -59,6 +62,12 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
         wifiScan = new ScheduledScan(wm, handler);
         handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+        
+        ImageView ivMap = (ImageView)this.findViewById(R.id.dummymap);
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dummymap);
+        int mPhotoWidth = mBitmap.getWidth();
+        int mPhotoHeight = mBitmap.getHeight();
+        ivMap.setImageBitmap(mBitmap);
         
     }
     
