@@ -3,10 +3,16 @@ package edu.buffalo.cse.locationapp;
 import java.util.List;
 import java.util.Timer;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Region;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,9 +25,15 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewDebug.FlagToString;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,6 +49,9 @@ OnTaskCompleted listener;
 int TIMER_PERIOD = 2000; 
 
 TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
+ImageView ivMap;
+MapView mapMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,22 +69,45 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
         mAccelerometerSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); 
         sm.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         
-        Handler handler = new Handler(){
-        	public void handleMessage(Message msg){
-        		tvWifi.setText(msg.getData().getString("ListSize"));
-        	}
-        };
-        wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
-        wifiScan = new ScheduledScan(wm, handler);
-        handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
         
-        ImageView ivMap = (ImageView)this.findViewById(R.id.dummymap);
+        wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
+        
+        mapMap = (MapView) this.findViewById(R.id.dummymap);
+        mapMap.setOnTouchListener(clickListener);
+        /*
+        ivMap = (ImageView)this.findViewById(R.id.dummymap);
         Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dummymap);
         int mPhotoWidth = mBitmap.getWidth();
         int mPhotoHeight = mBitmap.getHeight();
         ivMap.setImageBitmap(mBitmap);
-        
+        ivMap.setOnTouchListener(clickListener);
+        */
     }
+    
+    Handler handler = new Handler(){
+    	public void handleMessage(Message msg){
+    		tvWifi.setText(msg.getData().getString("ListSize"));
+    	}
+    };
+    
+    private OnTouchListener clickListener = new OnTouchListener() {
+    	
+		public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN){
+               
+            	mapMap.drawCircle(event.getX(), event.getY());
+            	wifiScan = new ScheduledScan(wm, handler);
+                handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+                            	
+            	Log.i("CSE622:", "Scan Started: " +
+                        String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+            	
+            	//Database islemlerini baslat
+            }   
+            return true;
+        }
+    	
+};
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -94,8 +132,9 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
 	@Override
 	public void onLocationChanged(Location location) {
 		// TODO Auto-generated method stub
-		Log.v("LocationApp","Location updated");
-		tvGps.setText("Location:"+location.getLatitude()+", "+location.getLongitude());
+		//we should carry this into another thread
+		//Log.v("LocationApp","Location updated");
+		//tvGps.setText("Location:"+location.getLatitude()+", "+location.getLongitude());
 	}
 
 
@@ -123,12 +162,13 @@ TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		// TODO Auto-generated method stub
-		Log.v("LocationApp", "Sensor changed");
-		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-			tvAccX.setText("Acc. in X: " + event.values[0]);
-			tvAccY.setText("Acc. in Y: " + event.values[1]);
-			tvAccZ.setText("Acc. in Z: " + event.values[2]);
-		}
+		//we have to carry this into another thread
+		//Log.v("LocationApp", "Sensor changed");
+		//if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+		//	tvAccX.setText("Acc. in X: " + event.values[0]);
+		//	tvAccY.setText("Acc. in Y: " + event.values[1]);
+		//	tvAccZ.setText("Acc. in Z: " + event.values[2]);
+		//}
 	}
 	
 	

@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.storage.StorageManager;
 import android.util.Log;
 /**
  * @author Gokhan Kul
@@ -16,7 +17,8 @@ public class ScheduledScan implements Runnable {
 	private WifiManager wm;
 	private List<ScanResult> scanResults;
 	private Handler handler;
-	private int repeatTime = 2000;
+	private int repeatTime = 500;
+	private int scanLimit = 4;
 	public ScheduledScan(WifiManager wm, Handler handler) {
 		this.wm = wm;
 		this.handler = handler;
@@ -26,7 +28,19 @@ public class ScheduledScan implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		scanResults = scanRSSI();
-		handler.postDelayed(this, repeatTime);
+		if (scanLimit != 0) {
+			handler.postDelayed(this, repeatTime);
+			scanLimit--;
+		}
+		else {
+			Bundle bundle = new Bundle();
+			Message msg = this.handler.obtainMessage();
+			bundle.putString("ListSize", "Scan Complete");
+			msg.setData(bundle);
+			this.handler.sendMessage(msg);
+			
+			handler = null;
+		}
 	}
 	public List<ScanResult> getScanResults() {
 		return scanResults;
