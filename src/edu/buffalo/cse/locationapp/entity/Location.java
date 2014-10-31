@@ -1,4 +1,4 @@
-package edu.buffalo.cse.algorithm.knearestneighbor;
+package edu.buffalo.cse.locationapp.entity;
 
 public class Location
 {
@@ -20,8 +20,15 @@ public class Location
     {
         this.m_xLocation = xLocation;
         this.m_yLocation = yLocation;
-        this.m_MapID = map.getMapID();
-        this.m_projectID = map.getProjectID();
+        //this.m_MapID = map.getMapID();
+        //this.m_projectID = map.getProjectID();
+    }
+    
+    public Location(Location location) {
+    	this.m_xLocation = location.getXLocation();
+    	this.m_yLocation = location.getYLocation();
+    	this.m_MapID = location.getMapID();
+    	this.m_projectID = location.getProjectID();
     }
 
 	public int getID() {

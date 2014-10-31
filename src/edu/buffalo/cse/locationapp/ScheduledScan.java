@@ -1,6 +1,10 @@
 package edu.buffalo.cse.locationapp;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.buffalo.cse.locationapp.business.BusinessManager;
+import edu.buffalo.cse.locationapp.entity.Location;
+import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -14,16 +18,31 @@ import android.util.Log;
  * Added on 09/10/2014
  */
 public class ScheduledScan implements Runnable {
-	private WifiManager wm;
+	private Context context = null;
+	private WifiManager wm = null;
+	private BusinessManager bm = null;
 	private List<ScanResult> scanResults;
 	private Handler handler;
-	private int repeatTime = 500;
-	private int scanLimit = 4;
+	private int repeatTime = 1000;
+	private int scanLimit = 5;
+	private Location location = null;
+	
 	public ScheduledScan(WifiManager wm, Handler handler) {
 		this.wm = wm;
 		this.handler = handler;
 		
+		
 	}
+	
+	public ScheduledScan(Context context, WifiManager wm, Handler handler,  Location location)  {
+		this.context = context;
+		this.wm = wm;
+		this.handler = handler;
+		this.location = location;
+		
+		bm = new BusinessManager(context);
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -42,14 +61,21 @@ public class ScheduledScan implements Runnable {
 			handler = null;
 		}
 	}
+	
 	public List<ScanResult> getScanResults() {
 		return scanResults;
 	}
 	
 	private List<ScanResult> scanRSSI() {
 		List<ScanResult> scanResult = new ArrayList<ScanResult>();
+		Log.e("CSE622", "wifimanager starting: " + (wm == null)); 
 		if (wm.startScan()) {
 			scanResult = wm.getScanResults();
+			
+			if (location != null) {
+				// todo bm.saveFingerprint(location, scanResult);
+			}
+			
 			Log.v("LocationApp", Integer.toString(scanResult.size()));
 			Message msg = this.handler.obtainMessage();
 			Bundle bundle = new Bundle();

@@ -3,8 +3,11 @@ package edu.buffalo.cse.locationapp;
 import java.util.List;
 import java.util.Timer;
 
+import edu.buffalo.cse.locationapp.business.BusinessManager;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,19 +41,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-public class MainActivity extends Activity implements LocationListener, SensorEventListener, OnTaskCompleted{
-LocationManager lm;
-Sensor mAccelerometerSensor;
-SensorManager sm;
-WifiManager wm;
-ScheduledScan wifiScan;
-OnTaskCompleted listener;
+public class MainActivity extends Activity implements LocationListener, SensorEventListener, OnTaskCompleted {
 
-int TIMER_PERIOD = 2000; 
+	LocationManager lm;
+	Sensor mAccelerometerSensor;
+	SensorManager sm;
+	WifiManager wm;
+	ScheduledScan wifiScan;
+	OnTaskCompleted listener;
 
-TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
-ImageView ivMap;
-MapView mapMap;
+	int TIMER_PERIOD = 2000; 
+
+	TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
+	ImageView ivMap;
+	MapView mapMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +62,8 @@ MapView mapMap;
         setContentView(R.layout.activity_main);
         tvGps = (TextView)this.findViewById(R.id.displaytext);
         tvAccX = (TextView)this.findViewById(R.id.xcoor);
-        tvAccY = (TextView)this.findViewById(R.id.ycoor);
-        tvAccZ = (TextView)this.findViewById(R.id.zcoor);
+        //tvAccY = (TextView)this.findViewById(R.id.ycoor);
+        //tvAccZ = (TextView)this.findViewById(R.id.zcoor);
         tvWifi = (TextView)this.findViewById(R.id.wifidata);
         
         lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
@@ -71,6 +75,14 @@ MapView mapMap;
         
         
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
+        
+        if (wm == null) {
+        	tvAccX.setText("WifiManager could not get the service");
+        }
+        
+        if (wm != null) {
+        	tvAccX.setText("WifiManager active");
+        }
         
         mapMap = (MapView) this.findViewById(R.id.dummymap);
         mapMap.setOnTouchListener(clickListener);
@@ -96,18 +108,19 @@ MapView mapMap;
             if (event.getAction() == MotionEvent.ACTION_DOWN){
                
             	mapMap.drawCircle(event.getX(), event.getY());
-            	wifiScan = new ScheduledScan(wm, handler);
+            	wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, new edu.buffalo.cse.locationapp.entity.Location((int)event.getX(), (int)event.getY(), null));
                 handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
                             	
             	Log.i("CSE622:", "Scan Started: " +
                         String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+            	
             	
             	//Database islemlerini baslat
             }   
             return true;
         }
     	
-};
+    };
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

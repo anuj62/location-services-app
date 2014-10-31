@@ -1,4 +1,4 @@
-package edu.buffalo.cse.algorithm.knearestneighbor;
+package edu.buffalo.cse.locationapp.entity;
 
 import android.graphics.Bitmap;
 

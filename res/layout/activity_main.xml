@@ -48,21 +48,21 @@
                 android:text="X Coordinate: " />
         </TableRow>
 
-        <TableRow>
-            <TextView
-                android:id="@+id/ycoor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Y Coordinate: " />
-        </TableRow>
+<!--         <TableRow> -->
+<!--             <TextView -->
+<!--                 android:id="@+id/ycoor" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:text="Y Coordinate: " /> -->
+<!--         </TableRow> -->
 
-        <TableRow>
-            <TextView
-                android:id="@+id/zcoor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Z Coordinate: " />
-        </TableRow>
+<!--         <TableRow> -->
+<!--             <TextView -->
+<!--                 android:id="@+id/zcoor" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:text="Z Coordinate: " /> -->
+<!--         </TableRow> -->
 	</TableLayout>
 
 </RelativeLayout>

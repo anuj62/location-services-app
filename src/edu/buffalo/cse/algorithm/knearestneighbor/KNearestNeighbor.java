@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import edu.buffalo.cse.locationapp.entity.AccessPoint;
+import edu.buffalo.cse.locationapp.entity.Location;
+
 public class KNearestNeighbor
 {
     private int k = 3;

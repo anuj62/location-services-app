@@ -13,7 +13,7 @@ public class PMFactory {
     //TODO implement a method to get Application Context
     private static Context context = null; 
     
-    public static PersistencyManager PersistencyManager() {
+    public static PersistencyManager PersistencyManager(Context context) {
     	if (m_PersistencyManager == null)
         {
     		m_PersistencyManager = new PersistencyManager(context);
@@ -36,7 +36,7 @@ public class PMFactory {
     {
         if (m_PMLocation == null)
         {
-            m_PMLocation = new PMLocation();
+            m_PMLocation = new PMLocation(context);
         }
 
         return m_PMLocation;
@@ -66,7 +66,7 @@ public class PMFactory {
     {
         if (m_PMSignalStrength == null)
         {
-            m_PMSignalStrength = new PMSignalStrength();
+            m_PMSignalStrength = new PMSignalStrength(context);
         }
 
         return m_PMSignalStrength;

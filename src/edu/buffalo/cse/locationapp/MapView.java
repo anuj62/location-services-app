@@ -16,8 +16,8 @@ public class MapView extends SurfaceView {
 	private SurfaceHolder surfaceHolder;
     private Bitmap bmpIcon;
     
-    int smallCircle = 4;
-    int bigCircle = 6;
+    int smallCircle = 16;
+    int bigCircle = 20;
     
 	public MapView(Context context) {
 		super(context);
@@ -62,14 +62,14 @@ public class MapView extends SurfaceView {
 	}
 	
 	protected void drawSomething(Canvas canvas) {
-		canvas.drawBitmap(bmpIcon, 0, 0, null);
+		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
 	 }
 
 	public void drawCircle(float x, float y) {
 		// TODO Auto-generated method stub
 		
 		Canvas canvas = surfaceHolder.lockCanvas(null);
-        canvas.drawBitmap(bmpIcon, 0, 0, null);
+        canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
     	Paint paint1 = new Paint();
         paint1.setColor(Color.rgb(140, 0, 26));
         paint1.setStyle(Style.FILL);

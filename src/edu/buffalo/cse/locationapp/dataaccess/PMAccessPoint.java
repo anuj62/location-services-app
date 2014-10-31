@@ -7,8 +7,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
-import edu.buffalo.cse.algorithm.knearestneighbor.AccessPoint;
 import edu.buffalo.cse.locationapp.dataaccess.AccessPointContract.AccessPointEntry;
+import edu.buffalo.cse.locationapp.entity.AccessPoint;
 
 public class PMAccessPoint extends PersistencyManager
 {	
@@ -51,35 +51,9 @@ public class PMAccessPoint extends PersistencyManager
 
     public AccessPoint GetAccessPoint(String macAddress)
     {
-    	
-    	//These are the columns that are going to be returned
-    	String[] projection = {
-    		    AccessPointEntry._ID,
-    		    AccessPointEntry.COLUMN_NAME_SSID,
-    		    AccessPointEntry.COLUMN_NAME_DESC
-    	};
-    	
-    	//These are the columns that are going to be used in WHERE
-    	String selection = AccessPointEntry.COLUMN_NAME_MACADDRESS;
-    	
-    	//These are the values of columns that are going to be used in WHERE
-    	String[] selectionArgs = {
-    		    macAddress
-    	};
-
-    	// How you want the results sorted in the resulting Cursor
-    	String sortOrder = AccessPointEntry.COLUMN_NAME_PROJECTID + " DESC";
-
-    	Cursor c = readableDB.query(
-    		    AccessPointEntry.TABLE_NAME,  // The table to query
-    		    projection,                               // The columns to return
-    		    selection,                                // The columns for the WHERE clause
-    		    selectionArgs,                            // The values for the WHERE clause
-    		    null,                                     // don't group the rows
-    		    null,                                     // don't filter by row groups
-    		    sortOrder                                 // The sort order
-    	);
-    
+    	Cursor c = readableDB.rawQuery(
+    			"select * from " + AccessPointEntry.TABLE_NAME + " where macaddress = " + macAddress, null);
+    		    
     	c.moveToFirst();
     	while (c.isAfterLast() == false) {
     		c.getString(1); //result string
