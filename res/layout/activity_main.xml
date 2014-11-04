@@ -15,12 +15,12 @@
     <TableLayout
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<TableRow>
+	    <!-- 	<TableRow>
 	    
-	    <!-- ImageView android:id="@+id/dummymap"
+ImageView android:id="@+id/dummymap"
    android:layout_width="wrap_content"
-   android:layout_height="wrap_content" /> -->
-	</TableRow>
+   android:layout_height="wrap_content" />
+	</TableRow> -->
 	<TableRow>
 	    <TextView 
 	        android:id="@+id/locationdata"
@@ -45,9 +45,8 @@
                 android:id="@+id/xcoor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="X Coordinate: " />
+                android:text="@string/X Coordinate: " />
         </TableRow>
-
 <!--         <TableRow> -->
 <!--             <TextView -->
 <!--                 android:id="@+id/ycoor" -->
@@ -63,6 +62,45 @@
 <!--                 android:layout_height="wrap_content" -->
 <!--                 android:text="Z Coordinate: " /> -->
 <!--         </TableRow> -->
+		
+		<TableRow>
+            <TextView
+                android:id="@+id/distanceX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/0.0" />
+        </TableRow>
+        
+        <TableRow>
+            <TextView
+                android:id="@+id/distanceY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/0.0" />
+        </TableRow>
+        
+        <TableRow>
+            <TextView
+                android:id="@+id/distanceZ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/0.0" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/stepCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/0" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/stepDetector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/0" />
+        </TableRow>
+        
 	</TableLayout>
 
 </RelativeLayout>
