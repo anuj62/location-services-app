@@ -8,10 +8,31 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.buffalo.cse.locationapp.MainActivity" >
 
+    <edu.buffalo.cse.locationapp.MapView android:id="@+id/dummymap" 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    
     <TableLayout
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-
+	<TableRow>
+	    
+	    <!-- ImageView android:id="@+id/dummymap"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content" /> -->
+	</TableRow>
+	<TableRow>
+	    <TextView 
+	        android:id="@+id/locationdata"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"/>
+	</TableRow>
+	<TableRow>
+	    <TextView
+	        android:id="@+id/wifidata"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"/>
+	</TableRow>
 	<TableRow>
 	    <TextView
 	        android:id="@+id/displaytext"
@@ -27,21 +48,21 @@
                 android:text="X Coordinate: " />
         </TableRow>
 
-        <TableRow>
-            <TextView
-                android:id="@+id/ycoor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Y Coordinate: " />
-        </TableRow>
+<!--         <TableRow> -->
+<!--             <TextView -->
+<!--                 android:id="@+id/ycoor" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:text="Y Coordinate: " /> -->
+<!--         </TableRow> -->
 
-        <TableRow>
-            <TextView
-                android:id="@+id/zcoor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Z Coordinate: " />
-        </TableRow>
+<!--         <TableRow> -->
+<!--             <TextView -->
+<!--                 android:id="@+id/zcoor" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:text="Z Coordinate: " /> -->
+<!--         </TableRow> -->
 	</TableLayout>
 
 </RelativeLayout>
