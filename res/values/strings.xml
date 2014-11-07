@@ -4,5 +4,9 @@
     <string name="app_name">Location App</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="xcoordinate">X Co-ordinates</string>
+    <string name="ycoordinate">Y Co-ordinates</string>
+    <string name="fzero">0.0</string>
+    <string name="izero">0</string>
 
 </resources>

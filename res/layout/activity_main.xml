@@ -45,7 +45,7 @@ ImageView android:id="@+id/dummymap"
                 android:id="@+id/xcoor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/X Coordinate: " />
+                android:text="@string/xcoordinate" />
         </TableRow>
 <!--         <TableRow> -->
 <!--             <TextView -->
@@ -68,7 +68,7 @@ ImageView android:id="@+id/dummymap"
                 android:id="@+id/distanceX"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/0.0" />
+                android:text="@string/fzero" />
         </TableRow>
         
         <TableRow>
@@ -76,7 +76,7 @@ ImageView android:id="@+id/dummymap"
                 android:id="@+id/distanceY"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/0.0" />
+                android:text="@string/fzero" />
         </TableRow>
         
         <TableRow>
@@ -84,21 +84,21 @@ ImageView android:id="@+id/dummymap"
                 android:id="@+id/distanceZ"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/0.0" />
+                android:text="@string/fzero" />
         </TableRow>
         <TableRow>
             <TextView
                 android:id="@+id/stepCounter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/0" />
+                android:text="@string/izero" />
         </TableRow>
         <TableRow>
             <TextView
                 android:id="@+id/stepDetector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/0" />
+                android:text="@string/izero" />
         </TableRow>
         
 	</TableLayout>
