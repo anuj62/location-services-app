@@ -37,7 +37,7 @@ public class MapView extends SurfaceView {
 	private void init(){
 		  surfaceHolder = getHolder();
 		  bmpIcon = BitmapFactory.decodeResource(getResources(), 
-		    R.drawable.dummymap);
+		    R.drawable.davis01);
 		  surfaceHolder.addCallback(new SurfaceHolder.Callback(){
 
 		   @Override

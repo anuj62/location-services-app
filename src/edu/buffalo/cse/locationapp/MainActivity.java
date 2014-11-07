@@ -3,11 +3,15 @@ package edu.buffalo.cse.locationapp;
 import java.util.List;
 import java.util.Timer;
 
+import constants.Messages;
+
 import edu.buffalo.cse.locationapp.business.BusinessManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -27,6 +31,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
@@ -36,8 +41,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewDebug.FlagToString;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity implements LocationListener, SensorEventListener, OnTaskCompleted {
@@ -112,7 +119,18 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     
     Handler handler = new Handler(){
     	public void handleMessage(Message msg){
-    		tvWifi.setText(msg.getData().getString("ListSize"));
+    		int messageType = msg.getData().getInt("MessageType");
+    		switch (messageType){
+    		case Messages.MESSAGE_WIFI:
+    			tvWifi.setText(msg.getData().getString("ListSize"));
+    			break;
+    		case Messages.MESSAGE_INPUTTEXT:
+    			Toast.makeText(MainActivity.this, msg.getData().getString(Messages.DATA_INPUTTEXT), Toast.LENGTH_SHORT).show();
+    			break;
+    			default:
+    			
+    		}
+    		
     	}
     };
     
@@ -120,8 +138,10 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     	
 		public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN){
-               
+            	MapTextInput mapText = new MapTextInput(handler);
             	mapMap.drawCircle(event.getX(), event.getY());
+                handler.post(mapText);
+				
             	wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, new edu.buffalo.cse.locationapp.entity.Location((int)event.getX(), (int)event.getY(), null));
                 handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
                             	
@@ -250,5 +270,51 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 	public void onTaskCompleted() {
 		List<ScanResult> scanResults = wifiScan.getScanResults();
 		Log.v("LocationApp", Integer.toString(scanResults.size()) + " should be printed now.");
+	}
+	
+	private class MapTextInput implements Runnable {
+		Handler handler;
+		public MapTextInput(Handler aHandler){
+			this.handler = aHandler;
+		}
+
+		@Override
+		public void run() {
+			AlertDialog.Builder textInputDialog = new AlertDialog.Builder(MainActivity.this);
+            final EditText textInputField = new EditText(MainActivity.this);
+            textInputDialog.setTitle("Enter Location Name")
+            .setView(textInputField)
+            .setPositiveButton("Done", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Bundle locationName = new Bundle();
+					locationName.putInt("MessageType", Messages.MESSAGE_INPUTTEXT);
+					String locationText = "LOCATION";
+					Editable inputText  = textInputField.getText();
+					if(inputText == null){
+						locationText = "UNKNOWN";
+					}else{
+						locationText = inputText.toString();
+					}
+					locationName.putString(Messages.DATA_INPUTTEXT, locationText);
+					Message msg = MapTextInput.this.handler.obtainMessage();
+					msg.setData(locationName);
+					MapTextInput.this.handler.sendMessage(msg);
+				}
+			});
+            
+            textInputDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+            textInputDialog.show();
+			
+		}
+		
 	}
 }
