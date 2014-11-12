@@ -2,7 +2,8 @@ package edu.buffalo.cse.locationapp;
 import java.util.ArrayList;
 import java.util.List;
 
-import constants.Messages;
+import constants.Constants;
+import constants.Constants;
 
 import edu.buffalo.cse.locationapp.business.BusinessManager;
 import edu.buffalo.cse.locationapp.entity.Location;
@@ -81,7 +82,7 @@ public class ScheduledScan implements Runnable {
 			Log.v("LocationApp", Integer.toString(scanResult.size()));
 			Message msg = this.handler.obtainMessage();
 			Bundle bundle = new Bundle();
-			bundle.putInt("MessageType", Messages.MESSAGE_WIFI);
+			bundle.putInt("MessageType", Constants.MESSAGE_WIFI);
 			bundle.putString("ListSize", "Scan Result: "+scanResult.size());
 			bundle.putString("ListInfo", "Wifi622 Signal Strenth: " + printInfo(scanResult)); //BugFix: key name same as previous. Was "ListSize"
 			msg.setData(bundle);

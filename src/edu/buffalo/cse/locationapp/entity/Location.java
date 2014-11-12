@@ -3,6 +3,7 @@ package edu.buffalo.cse.locationapp.entity;
 public class Location
 {
     private int m_ID;
+    private String m_Tag;
     private int m_xLocation;
     private int m_yLocation;
     private int m_MapID;
@@ -10,12 +11,13 @@ public class Location
 
     public Location()
     {
+    	this.m_Tag = "";
         this.m_xLocation = 0;
         this.m_yLocation = 0;
         this.m_MapID = 0;
         this.m_projectID = 0;
     }
-
+ 
     public Location(int xLocation, int yLocation, Map map)
     {
         this.m_xLocation = xLocation;
@@ -24,7 +26,17 @@ public class Location
         //this.m_projectID = map.getProjectID();
     }
     
+    public Location(String tag, int xLocation, int yLocation, Map map)
+    {
+    	this.m_Tag = tag;
+        this.m_xLocation = xLocation;
+        this.m_yLocation = yLocation;
+        //this.m_MapID = map.getMapID();
+        //this.m_projectID = map.getProjectID();
+    }
+    
     public Location(Location location) {
+    	this.m_Tag = location.getTag();
     	this.m_xLocation = location.getXLocation();
     	this.m_yLocation = location.getYLocation();
     	this.m_MapID = location.getMapID();
@@ -39,6 +51,14 @@ public class Location
 		this.m_ID = m_ID;
 	}
 
+	public String getTag() {
+		return m_Tag;
+	}
+
+	public void setTag(String m_Tag) {
+		this.m_Tag = m_Tag;
+	}
+	
 	public int getXLocation() {
 		return m_xLocation;
 	}

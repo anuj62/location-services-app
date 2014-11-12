@@ -3,7 +3,7 @@ package edu.buffalo.cse.locationapp;
 import java.util.List;
 import java.util.Timer;
 
-import constants.Messages;
+import constants.Constants;
 
 import edu.buffalo.cse.locationapp.business.BusinessManager;
 import android.annotation.SuppressLint;
@@ -79,13 +79,13 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 		mLinearAcc = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 		stepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 		stepDetector = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
-		
+		 
 		valX = (TextView)this.findViewById(R.id.distanceX);
 		valY = (TextView)this.findViewById(R.id.distanceY);
 		valZ = (TextView)this.findViewById(R.id.distanceZ);
 		counter = (TextView)this.findViewById(R.id.stepCounter);
 		detector = (TextView)this.findViewById(R.id.stepDetector);        
-        
+         
         tvGps = (TextView)this.findViewById(R.id.displaytext);
         tvAccX = (TextView)this.findViewById(R.id.xcoor);
         //tvAccY = (TextView)this.findViewById(R.id.ycoor);
@@ -97,35 +97,21 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
         
-        if (wm == null) {
-        	tvAccX.setText("WifiManager could not get the service");
-        }
-        
-        if (wm != null) {
-        	tvAccX.setText("WifiManager active");
-        }
         
         mapMap = (MapView) this.findViewById(R.id.dummymap);
         mapMap.setOnTouchListener(clickListener);
-        /*
-        ivMap = (ImageView)this.findViewById(R.id.dummymap);
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dummymap);
-        int mPhotoWidth = mBitmap.getWidth();
-        int mPhotoHeight = mBitmap.getHeight();
-        ivMap.setImageBitmap(mBitmap);
-        ivMap.setOnTouchListener(clickListener);
-        */
+       
     }
     
     Handler handler = new Handler(){
     	public void handleMessage(Message msg){
     		int messageType = msg.getData().getInt("MessageType");
     		switch (messageType){
-    		case Messages.MESSAGE_WIFI:
+    		case Constants.MESSAGE_WIFI:
     			tvWifi.setText(msg.getData().getString("ListSize"));
     			break;
-    		case Messages.MESSAGE_INPUTTEXT:
-    			Toast.makeText(MainActivity.this, msg.getData().getString(Messages.DATA_INPUTTEXT), Toast.LENGTH_SHORT).show();
+    		case Constants.MESSAGE_INPUTTEXT:
+    			Toast.makeText(MainActivity.this, msg.getData().getString(Constants.DATA_INPUTTEXT), Toast.LENGTH_SHORT).show();
     			break;
     			default:
     			
@@ -199,7 +185,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 	}
 
 
-	@Override
+	@Override 
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
 		
@@ -223,8 +209,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		// TODO Auto-generated method stub
-		//we have to carry this into another thread
+		// todo we have to carry this into another thread
 		//Log.v("LocationApp", "Sensor changed");
 		//if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 		//	tvAccX.setText("Acc. in X: " + event.values[0]);
@@ -289,7 +274,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Bundle locationName = new Bundle();
-					locationName.putInt("MessageType", Messages.MESSAGE_INPUTTEXT);
+					locationName.putInt("MessageType", Constants.MESSAGE_INPUTTEXT);
 					String locationText = "LOCATION";
 					Editable inputText  = textInputField.getText();
 					if(inputText == null){
@@ -297,7 +282,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 					}else{
 						locationText = inputText.toString();
 					}
-					locationName.putString(Messages.DATA_INPUTTEXT, locationText);
+					locationName.putString(Constants.DATA_INPUTTEXT, locationText);
 					Message msg = MapTextInput.this.handler.obtainMessage();
 					msg.setData(locationName);
 					MapTextInput.this.handler.sendMessage(msg);
