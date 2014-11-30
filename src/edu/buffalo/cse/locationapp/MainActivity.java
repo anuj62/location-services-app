@@ -49,25 +49,26 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements LocationListener, SensorEventListener, OnTaskCompleted {
 
-	LocationManager lm;
-	WifiManager wm;
-	ScheduledScan wifiScan;
-	OnTaskCompleted listener;
+	private LocationManager lm;
+	private WifiManager wm;
+	private ScheduledScan wifiScan;
+	private OnTaskCompleted listener;
 	//for inertial sensors
 	private SensorManager mSensorManager;
 	private Sensor mLinearAcc, stepCounter, stepDetector;
 	
-	int TIMER_PERIOD = 2000;
+	private int TIMER_PERIOD = 2000;
+	private boolean isTrainingMode = true;
 	//for inertial sensors
-	float initialVelocityX, oldAccX, initialVelocityY, oldAccY, initialVelocityZ, oldAccZ;
-	float distanceX, distanceY, distanceZ, timeDuration, steps;
-	long oldTime;
+	private float initialVelocityX, oldAccX, initialVelocityY, oldAccY, initialVelocityZ, oldAccZ;
+	private float distanceX, distanceY, distanceZ, timeDuration, steps;
+	private long oldTime;
 
-	TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
-	ImageView ivMap;
-	MapView mapMap;
+	private TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
+	private ImageView ivMap;
+	private MapView mapMap;
 	//for inertial sensors
-	TextView valX, valY, valZ, counter, detector;
+	private TextView valX, valY, valZ, counter, detector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,21 +124,26 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
     private OnTouchListener clickListener = new OnTouchListener() {
     	
 		public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-            	MapTextInput mapText = new MapTextInput(handler);
-            	mapMap.drawCircle(event.getX(), event.getY());
-                handler.post(mapText);
+            if (true) { //mode == training_mode) {
+            	if (event.getAction() == MotionEvent.ACTION_DOWN){
+            		MapTextInput mapText = new MapTextInput(handler);
+            		mapMap.drawCircle(event.getX(), event.getY());
+                	handler.post(mapText);
 				
-            	wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, new edu.buffalo.cse.locationapp.entity.Location((int)event.getX(), (int)event.getY(), null));
-                handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+            		wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, new edu.buffalo.cse.locationapp.entity.Location(mapText.getInput(), (int)event.getX(), (int)event.getY(), null));
+                	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
                             	
-            	Log.i("CSE622:", "Scan Started: " +
-                        String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
-            	
-            	
-            	//Database islemlerini baslat
-            }   
+            		Log.i("CSE622:", "Scan Started: " +
+            			String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+            	}
+            }
+            else {
+            	// if the ScheduledScan is created without a location, then it means the program is in positioning mode
+            	wifiScan = new ScheduledScan(getApplicationContext(), wm, handler);
+            	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+            }
             return true;
+            
         }
     	
     };
@@ -157,6 +163,14 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        }
+        else if(id == R.id.training_mode) {
+        	if(item.isChecked()) {
+        		isTrainingMode = true;
+        	}
+        	else {
+        		isTrainingMode = false;
+        	}
         }
         return super.onOptionsItemSelected(item);
     }
@@ -258,9 +272,19 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 	}
 	
 	private class MapTextInput implements Runnable {
-		Handler handler;
+		private Handler handler;
+		private String location;
+		
 		public MapTextInput(Handler aHandler){
 			this.handler = aHandler;
+		}
+		
+		public String getInput() {
+			return location;
+		}
+		
+		public void setInput(String locationName) {
+			this.location = locationName;
 		}
 
 		@Override
@@ -285,6 +309,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 					locationName.putString(Constants.DATA_INPUTTEXT, locationText);
 					Message msg = MapTextInput.this.handler.obtainMessage();
 					msg.setData(locationName);
+					location = locationText;
 					MapTextInput.this.handler.sendMessage(msg);
 				}
 			});

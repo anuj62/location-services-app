@@ -29,12 +29,11 @@ public class ScheduledScan implements Runnable {
 	private int repeatTime = 1000;
 	private int scanLimit = 5;
 	private Location location = null;
+	private boolean isTrainingMode = true;
 	
 	public ScheduledScan(WifiManager wm, Handler handler) {
 		this.wm = wm;
 		this.handler = handler;
-		
-		
 	}
 	
 	public ScheduledScan(Context context, WifiManager wm, Handler handler,  Location location)  {
@@ -42,26 +41,41 @@ public class ScheduledScan implements Runnable {
 		this.wm = wm;
 		this.handler = handler;
 		this.location = location;
+		this.isTrainingMode = true;
+		
+		bm = new BusinessManager(context);
+	}
+	
+	public ScheduledScan(Context context, WifiManager wm, Handler handler)  {
+		this.context = context;
+		this.wm = wm;
+		this.handler = handler;
+		this.isTrainingMode = false;
 		
 		bm = new BusinessManager(context);
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		scanResults = scanRSSI();
-		if (scanLimit != 0) {
-			handler.postDelayed(this, repeatTime);
-			scanLimit--;
+		if (isTrainingMode) {
+			scanResults = scanRSSI();
+			if (scanLimit != 0) {
+				handler.postDelayed(this, repeatTime);
+				scanLimit--;
+			}
+			else 	{
+				Bundle bundle = new Bundle();
+				Message msg = this.handler.obtainMessage();
+				bundle.putString("ListSize", "Scan Complete");
+				msg.setData(bundle);
+				this.handler.sendMessage(msg);
+			
+				handler = null;
+			}
 		}
 		else {
-			Bundle bundle = new Bundle();
-			Message msg = this.handler.obtainMessage();
-			bundle.putString("ListSize", "Scan Complete");
-			msg.setData(bundle);
-			this.handler.sendMessage(msg);
-			
-			handler = null;
+			scanResults = scanRSSI();
+			handler.postDelayed(this, repeatTime);
 		}
 	}
 	
@@ -75,8 +89,13 @@ public class ScheduledScan implements Runnable {
 		if (wm.startScan()) {
 			scanResult = wm.getScanResults();
 			
-			if (location != null) {
-				// todo bm.saveFingerprint(location, scanResult);
+			if ((location != null) && (isTrainingMode)) {
+				//todo solve exception
+				//bm.saveFingerprint(location, scanResult);
+			}
+			else {
+				//todo this will return the result as Location object
+				bm.getPosition(scanResult);
 			}
 			
 			Log.v("LocationApp", Integer.toString(scanResult.size()));
@@ -85,6 +104,7 @@ public class ScheduledScan implements Runnable {
 			bundle.putInt("MessageType", Constants.MESSAGE_WIFI);
 			bundle.putString("ListSize", "Scan Result: "+scanResult.size());
 			bundle.putString("ListInfo", "Wifi622 Signal Strenth: " + printInfo(scanResult)); //BugFix: key name same as previous. Was "ListSize"
+			//todo send calculated location to main activity
 			msg.setData(bundle);
 			this.handler.sendMessage(msg);
 		}
