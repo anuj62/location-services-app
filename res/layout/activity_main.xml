@@ -61,46 +61,7 @@ ImageView android:id="@+id/dummymap"
 <!--                 android:layout_width="wrap_content" -->
 <!--                 android:layout_height="wrap_content" -->
 <!--                 android:text="Z Coordinate: " /> -->
-<!--         </TableRow> -->
-		
-		<TableRow>
-            <TextView
-                android:id="@+id/distanceX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/fzero" />
-        </TableRow>
-        
-        <TableRow>
-            <TextView
-                android:id="@+id/distanceY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/fzero" />
-        </TableRow>
-        
-        <TableRow>
-            <TextView
-                android:id="@+id/distanceZ"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/fzero" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/stepCounter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/izero" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/stepDetector"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/izero" />
-        </TableRow>
-        
+<!--         </TableRow> -->        
 	</TableLayout>
 
 </RelativeLayout>
