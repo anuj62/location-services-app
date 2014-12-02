@@ -20,6 +20,16 @@ public class Vector
         m_apSignalStrengthList = apSignalStrengthList;
     }
     
+    public int GetLocationID()
+    {
+        return m_ID;
+    }
+    
+    public List<APRSSIPair> GetSignalStrengthList()
+    {
+        return m_apSignalStrengthList;
+    }
+    
     //public Vector(int locationID)
     //{
     //    m_ID = locationID;
@@ -45,10 +55,7 @@ public class Vector
         }
     }
 
-    public int GetLocationID()
-    {
-        return m_ID;
-    }
+    
 
     public Hashtable GetSignalDataList()
     {

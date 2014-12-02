@@ -1,10 +1,12 @@
 package edu.buffalo.cse.algorithm.knearestneighbor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
 import android.net.wifi.ScanResult;
+import android.util.SparseIntArray;
 
 import edu.buffalo.cse.locationapp.entity.AccessPoint;
 import edu.buffalo.cse.locationapp.entity.Location;
@@ -67,7 +69,7 @@ public class KNearestNeighbor
     		for (int i = 0; i < accessPointList.size(); i++) {
     			boolean isAdded = false;
     			for (int j = 0; i < pairList.size(); j++) {
-    				if (accessPointList.get(i).getMacAddress() == pairList.get(j).getAPMac()) {
+    				if (accessPointList.get(i).getMacAddress().equals(pairList.get(j).getAPMac())) {
     					isAdded = true;
     				}
     			}
@@ -133,7 +135,7 @@ public class KNearestNeighbor
     			boolean isListed = false;
     			if (accessPointList != null && accessPointList.size() > 0) {
     				for (int j = 0; j < accessPointList.size(); j++) {
-    					if (accessPointList.get(j).getMacAddress() == tempAccessPoint.getMacAddress()) {    					
+    					if (accessPointList.get(j).getMacAddress().equals(tempAccessPoint.getMacAddress())) {    					
     						isListed = true;
     						break;
     					}
@@ -160,10 +162,14 @@ public class KNearestNeighbor
         {
 
             //todo calculate and sort distances list here
+        	
+        	Location tempLocation = GetClosestLocation(signalList);
 
+        	/*
             Location[] tempLocationList = new Location[k];
             int x = 0, y = 0, z = 0;
 
+            
             for (int i = 0; i < k; i++)
             {
                 tempLocationList[i] = new Location(); //todo bring m_BMLocation.GetLocation(distances[distances.Count - k + i ].ID);
@@ -182,39 +188,78 @@ public class KNearestNeighbor
             //retVal.setMapID(z / k);
 
             return retVal;
+            */
+        	
+        	return tempLocation;
         }
 
         return null;
         
     }
+	
+	private Location GetClosestLocation(List<ScanResult> signalList) {
+		SparseIntArray distances = CalculateDistances(signalList);
+		
+		int tempKey = 0;
+		int minKey = 0;
+		int tempValue = Integer.MAX_VALUE;
+		int minValue = Integer.MAX_VALUE;
 
-    private List<APRSSIPair> CalculateDistances(Hashtable signalTable)
+		
+		
+		for(int i = 0; i < distances.size(); i++) {
+			tempKey = distances.keyAt(i);
+			// get the object by the key.
+			tempValue = distances.get(tempKey);
+			   
+			if (tempValue < minValue) {
+				minValue = tempValue;
+				minKey = tempKey;
+			}
+		}
+		
+		for(int i = 0; i < m_Location.size(); i++) {
+			if (m_Location.get(i).getID() == minKey) {
+				return m_Location.get(i);
+			}
+		}
+		
+		return null;
+	}
+
+    private SparseIntArray CalculateDistances(List<ScanResult> signalList)
     {
-        List<APRSSIPair> distances = new ArrayList<APRSSIPair>();
+    	//first integer is locationID and second is the distance
+        SparseIntArray distances = new SparseIntArray();
         
-        //todo
-
+        for (int i = 0; i < m_Vector.size(); i++) {
+        	distances.put(m_Vector.get(i).GetLocationID(), calculateDifference(signalList, m_Vector.get(i).GetSignalStrengthList()));
+        }
+        
         return distances;
     }
 
-    private double CalculateDifference(Hashtable recordedData, Hashtable signalTable)
-    {
-        double distance = 0;
+    private int calculateDifference(List<ScanResult> signalList, List<APRSSIPair> signalStrengthList) {
+    	double distance = 0;
+        for (int i = 0; i < signalStrengthList.size(); i++) {
+        	
+        	boolean isFound = false;
+        	
+        	for (int j = 0; j < signalList.size(); j++) {
+        		if (signalStrengthList.get(i).getAPMac().equals(signalList.get(j).BSSID)) {
+        			isFound = true;
+        			distance += Substract((double)signalStrengthList.get(i).getValue(), (double) signalList.get(j).level);
+        			break;
+        		}
+        	}
+        	
+        	if (!isFound) {
+        		//note : minimum signal strength value is assumed -100
+        		distance += Substract(signalStrengthList.get(i).getValue(), -100);
+        	}
+        }
 
-        // todo calculate distance
-        //foreach (item in recordedData)
-        //{
-        //    try
-        //    {
-        //        distance += Substract((double)item.Value, (double)signalTable[item.Key]);
-        //    }
-        //    catch
-        //    {
-        //        distance += Substract((double)item.Value, Global.NO_SIGNAL);
-        //    }
-        //}
-
-        return distance;
+        return (int) distance;
     }
 
     private double Substract(double value1, double value2)
