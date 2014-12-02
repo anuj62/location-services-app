@@ -48,11 +48,6 @@ public class Pedometer implements SensorEventListener {
 	private long mLastResetTime;
 	private float mLastResetAngle;
 	
-	/**
-	 * 
-	 * @param sm
-	 * @param pel
-	 */
 	public Pedometer(SensorManager sm, PedometerEventListener pel) {
 		mSensorManager = sm;
 		mPedometerEvent = pel;
@@ -77,9 +72,12 @@ public class Pedometer implements SensorEventListener {
 		mSensorManager.unregisterListener(this, mRotVectGyro);
 	}
 	
-	/**
-	 * 
-	 */
+	public void resetAngle() {
+		stop();
+		mLastResetAngle = 0;
+		start();
+	}
+	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
