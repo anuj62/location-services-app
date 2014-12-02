@@ -37,10 +37,20 @@ public class MapView extends SurfaceView {
 		init();
 	}
 	
+	Paint dot = new Paint();
+	Paint circle = new Paint();
+	
 	private void init(){
 		  surfaceHolder = getHolder();
 		  bmpIcon = BitmapFactory.decodeResource(getResources(), 
 		    R.drawable.davis01);
+		  
+		  circle.setColor(Color.rgb(255, 0, 0));
+		  circle.setStyle(Style.STROKE);
+		  circle.setStrokeWidth(5);
+		  dot.setColor(Color.rgb(255, 0, 0));
+		  dot.setStyle(Style.FILL);
+		  
 		  surfaceHolder.addCallback(new SurfaceHolder.Callback(){
 
 		   @Override
@@ -85,13 +95,14 @@ public class MapView extends SurfaceView {
 		
 	}
 
+	Matrix mat = new Matrix();
+	float pts[] = new float[2];
+	
 	public void drawPath(Path path, PointF center) {
 		Canvas canvas = surfaceHolder.lockCanvas(null);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
-		Matrix mat = new Matrix();
 		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
 		path.transform(mat);
-		float pts[] = new float[2];
 		pts[0] = center.x;
 		pts[1] = center.y;
 		mat.mapPoints(pts);
@@ -106,23 +117,14 @@ public class MapView extends SurfaceView {
 	}
 	
 	private void drawPoint(PointF center, Canvas canvas) {
-		Paint circle = new Paint();
-		circle.setColor(Color.rgb(255, 0, 0));
-		circle.setStyle(Style.STROKE);
-		circle.setStrokeWidth(5);
 		canvas.drawCircle(center.x, center.y, 30, circle);
-		Paint dot = new Paint();
-		dot.setColor(Color.rgb(255, 0, 0));
-		dot.setStyle(Style.FILL);
 		canvas.drawCircle(center.x, center.y, 6, dot);
 	}
 	
 	public void drawLocation(PointF center) {
 		Canvas canvas = surfaceHolder.lockCanvas(null);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
-		Matrix mat = new Matrix();
 		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
-		float pts[] = new float[2];
 		pts[0] = center.x;
 		pts[1] = center.y;
 		mat.mapPoints(pts);

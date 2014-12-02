@@ -75,13 +75,13 @@ public class PedometerPathMapper implements PedometerEventListener {
 		mStrideLengthInPixels = lengthInPixels;
 	}
 	
+	Matrix mat = new Matrix();
 	Thread walkStopped = new Thread(new Runnable() {
 		
 		@Override
 		public synchronized void run() {
 			walk = getWalkFromSteps(stepList);
-			Matrix mat = new Matrix();
-			mat.postTranslate(start.x, start.y);
+			mat.setTranslate(start.x, start.y);
 			walk.transform(mat);
 			int len = walk.stepPoints.length;
 			start = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
@@ -100,8 +100,7 @@ public class PedometerPathMapper implements PedometerEventListener {
 		public synchronized void run() {
 			// TODO Auto-generated method stub
 			walk = getWalkFromSteps(stepList);
-			Matrix mat = new Matrix();
-			mat.postTranslate(start.x, start.y);
+			mat.setTranslate(start.x, start.y);
 			walk.transform(mat);
 			int len = walk.stepPoints.length;
 			mEvent.getLocation(new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
