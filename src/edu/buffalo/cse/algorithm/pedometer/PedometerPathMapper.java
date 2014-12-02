@@ -68,6 +68,10 @@ public class PedometerPathMapper implements PedometerEventListener {
 	Walk walk;
 	PointF start = new PointF(285, 807);
 	
+	public void resetPosition(PointF point) {
+		start = point;
+	}
+	
 	Thread walkStopped = new Thread(new Runnable() {
 		
 		@Override
