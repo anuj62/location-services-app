@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import edu.buffalo.cse.algorithm.knearestneighbor.KNearestNeighbor;
+import edu.buffalo.cse.algorithm.knearestneighbor.SignalSample;
 import edu.buffalo.cse.locationapp.dataaccess.PMAccessPoint;
 import edu.buffalo.cse.locationapp.dataaccess.PMFactory;
 import edu.buffalo.cse.locationapp.dataaccess.PMLocation;
@@ -38,13 +39,7 @@ import edu.buffalo.cse.locationapp.entity.Location;
 public class BusinessManager {
 	
 	private JSONArray jsonarray = null;
-	
-	//private PMAccessPoint pmAccessPoint = null;
-	//private PMSignalStrength pmFingerprint = null;
-	//private PMLocation pmLocation = null;
-	
-	private List<ScanResult> fingerPrintList = null;
-	
+	private List<SignalSample> fingerPrintList = null;
 	private Context context = null;
 	
 	public BusinessManager(Context context) {
@@ -52,26 +47,29 @@ public class BusinessManager {
 	}
 
 	public void saveFingerprint(Location location, List<ScanResult> scanResult) {
-		/*
-		pmAccessPoint = PMFactory.PMAccessPoint();
-		pmLocation = PMFactory.PMLocation();
-		pmFingerprint = PMFactory.PMSignalStrength();
-		for (int i = 0; i < scanResult.size(); i++) {
-			pmAccessPoint.AddAccessPoint(
-					new AccessPoint(scanResult.get(i).BSSID, scanResult.get(i).SSID, "", 1));
-			pmLocation.AddLocation(new Location(location));
-			pmFingerprint.addFingerprint(new Fingerprint(location, scanResult.get(i).BSSID, scanResult.get(i).level, scanResult.get(i).frequency, scanResult.get(i).timestamp));
-		}
-		*/
-		
 		if (fingerPrintList == null) {
-			fingerPrintList = new ArrayList<ScanResult>();
+			fingerPrintList = new ArrayList<SignalSample>();
 		}
 		
 		scanResult = MergeSSID(scanResult);
 		
+		SignalSample tempSignalSample = null;
 		for (int i = 0; i < scanResult.size(); i++) {
-			fingerPrintList.add(scanResult.get(i));
+			tempSignalSample = new SignalSample();
+			
+			tempSignalSample.setSSID(scanResult.get(i).SSID);
+			tempSignalSample.setMacAddress(scanResult.get(i).BSSID);
+			tempSignalSample.setFrequency(scanResult.get(i).frequency);
+			tempSignalSample.setScanDateTime(scanResult.get(i).timestamp);
+			tempSignalSample.setCapabilities(scanResult.get(i).capabilities);
+			tempSignalSample.setRSSI(scanResult.get(i).level);
+			tempSignalSample.setMapID(location.getID());
+			tempSignalSample.setXCoordinate(location.getXLocation());
+			tempSignalSample.setYCoordinate(location.getYLocation());
+			tempSignalSample.setMapID(location.getMapID());
+			tempSignalSample.setTag(location.getTag());
+			
+			fingerPrintList.add(tempSignalSample);
 		}
 		
 		JSONArray scanArray = new JSONArray();
@@ -212,13 +210,10 @@ public class BusinessManager {
 	}
 
 	public Location getPosition(List<ScanResult> scanResult) {
+		// todo when data collection is completed, KNearestNeighbour should be initialized there, so the calculations should take place
+		// when the initialization completed, not everytime we get the location.
+		KNearestNeighbor algo = new KNearestNeighbor(fingerPrintList);
 		
-		KNearestNeighbor algo = new KNearestNeighbor();
-		
-		//return algo.PositionData(scanResult, fingerPrintList);;
-		return null;
+		return algo.PositionData(scanResult);
 	}
-	
-	
-
 }

@@ -23,17 +23,17 @@ public class SignalSample
     }
 
     /// <summary>
-    /// Gets or sets the network privacy information
+    /// Gets or sets the network capability information
     /// </summary>
-    public String getPrivacy() {
-    	return _privacy;
+    public String getCapabilities() {
+    	return _capabilities;
     }
     
-    public void setPrivacy(String privacy) {
-        _privacy = privacy;
+    public void setCapabilities(String capabilities) {
+        _capabilities = capabilities;
     }
     
-    private String _privacy;
+    private String _capabilities;
 
     /// <summary>
     /// Gets the MAC address associated with this class
@@ -66,6 +66,19 @@ public class SignalSample
     private String _ssid;
 
     /// <summary>
+    /// Gets or sets the location name tag
+    /// </summary>  
+    public String getTag() {
+    	return _tag;
+    }
+    
+    public void setTag(String tag) {
+    	_tag = tag;
+    }
+    
+    private String _tag;
+
+    /// <summary>
     /// Gets or sets the wifi network channel
     /// </summary>
     public int getChannel() {
@@ -77,6 +90,19 @@ public class SignalSample
     }
     
     private int _channel;
+    
+  /// <summary>
+    /// Gets or sets the wifi network frequency
+    /// </summary>
+    public int getFrequency() {
+    	return _frequency;
+    }
+    
+    public void setFrequency(int frequency) {
+    	_frequency = frequency;
+    }
+    
+    private int _frequency;
 
     /// <summary>
     /// Gets or sets the RSSI (receive signal strength indication).
@@ -95,15 +121,15 @@ public class SignalSample
     /// Gets or sets the string representation of the
     /// Network Card Name
     /// </summary>
-    public Date getScanDateTime() {
+    public long getScanDateTime() {
     	return _ScanDateTime;
     }
     
-    public void setScanDateTime(Date date) {
-    	_ScanDateTime = date;
+    public void setScanDateTime(long timestamp) {
+    	_ScanDateTime = timestamp;
     }
     
-    private Date _ScanDateTime;
+    private long _ScanDateTime;
 
     /// <summary>
     /// Gets or sets the string representation of the
@@ -152,7 +178,7 @@ public class SignalSample
         StringBuilder result = new StringBuilder();
         result.append(this._ssid + " \t " +
                           this._macAddress.toString() + " \t " +
-                          this._ScanDateTime.toString() + " \t " +
+                          this._ScanDateTime + " \t " +
                           this._rssi);
         return result.toString();
     }

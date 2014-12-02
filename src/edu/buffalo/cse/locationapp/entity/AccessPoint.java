@@ -10,12 +10,17 @@ public class AccessPoint
     
 	public AccessPoint(String m_macAddress, String m_SSID,
 			String m_Description, int m_projectID) {
-		this.m_ID = m_ID;
 		this.m_macAddress = m_macAddress;
 		this.m_SSID = m_SSID;
 		this.m_Description = m_Description;
 		this.m_projectID = m_projectID;
 	}
+	
+	public AccessPoint(String m_macAddress, String m_SSID) {
+		this.m_macAddress = m_macAddress;
+		this.m_SSID = m_SSID;
+	}
+	
 	public int getID() {
 		return m_ID;
 	}

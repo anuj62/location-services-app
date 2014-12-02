@@ -4,23 +4,29 @@ package edu.buffalo.cse.algorithm.knearestneighbor;
  * Representative of distance
  * @author gkul
  */
-public class VectorComponent implements Comparable<VectorComponent>
+public class APRSSIPair implements Comparable<APRSSIPair>
 {
-    private int m_ID;
+    private String m_ID;
     private double m_Value;
 
-    public VectorComponent(int id, double value)
+    public APRSSIPair(String accessPointMac, int value)
     {
-        this.m_ID = id;
+        this.m_ID = accessPointMac;
+        this.m_Value = value;
+    }
+    
+    public APRSSIPair(String accessPointMac, double value)
+    {
+        this.m_ID = accessPointMac;
         this.m_Value = value;
     }
 
-    public int getID() {
+    public String getAPMac() {
         return m_ID;
     }
     
-    public void setID(int id) {
-        m_ID = id;
+    public void setAPMac(String accessPointMac) {
+        m_ID = accessPointMac;
     }
 
     public double getValue() {
@@ -32,7 +38,7 @@ public class VectorComponent implements Comparable<VectorComponent>
     }
 
 	@Override
-	public int compareTo(VectorComponent another) {
+	public int compareTo(APRSSIPair another) {
 		int returnValue = 0;
 
 	     if (this != null && another == null)

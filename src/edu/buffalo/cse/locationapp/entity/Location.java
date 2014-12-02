@@ -35,6 +35,15 @@ public class Location
         //this.m_projectID = map.getProjectID();
     }
     
+    public Location(String tag, int xLocation, int yLocation, int mapID)
+    {
+    	this.m_Tag = tag;
+        this.m_xLocation = xLocation;
+        this.m_yLocation = yLocation;
+        this.m_MapID = mapID;
+        //this.m_projectID = map.getProjectID();
+    }
+    
     public Location(Location location) {
     	this.m_Tag = location.getTag();
     	this.m_xLocation = location.getXLocation();
