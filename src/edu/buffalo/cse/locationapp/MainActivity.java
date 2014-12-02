@@ -47,28 +47,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class MainActivity extends Activity implements LocationListener, SensorEventListener, OnTaskCompleted {
+public class MainActivity extends Activity implements LocationListener, OnTaskCompleted {
 
 	private LocationManager lm;
 	private WifiManager wm;
 	private ScheduledScan wifiScan;
 	private OnTaskCompleted listener;
-	//for inertial sensors
+
 	private SensorManager mSensorManager;
-	private Sensor mLinearAcc, stepCounter, stepDetector;
 	
 	private int TIMER_PERIOD = 2000;
 	private boolean isTrainingMode = true;
-	//for inertial sensors
-	private float initialVelocityX, oldAccX, initialVelocityY, oldAccY, initialVelocityZ, oldAccZ;
-	private float distanceX, distanceY, distanceZ, timeDuration, steps;
-	private long oldTime;
+
 
 	private TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
 	private ImageView ivMap;
 	private MapView mapMap;
-	//for inertial sensors
-	private TextView valX, valY, valZ, counter, detector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +71,7 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
         
         //inertial sensor code
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-		mLinearAcc = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-		stepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-		stepDetector = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 		 
-		valX = (TextView)this.findViewById(R.id.distanceX);
-		valY = (TextView)this.findViewById(R.id.distanceY);
-		valZ = (TextView)this.findViewById(R.id.distanceZ);
-		counter = (TextView)this.findViewById(R.id.stepCounter);
-		detector = (TextView)this.findViewById(R.id.stepDetector);        
-         
         tvGps = (TextView)this.findViewById(R.id.displaytext);
         tvAccX = (TextView)this.findViewById(R.id.xcoor);
         //tvAccY = (TextView)this.findViewById(R.id.ycoor);
@@ -209,62 +194,16 @@ public class MainActivity extends Activity implements LocationListener, SensorEv
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		mSensorManager.registerListener(this, mLinearAcc, SensorManager.SENSOR_DELAY_NORMAL);
-		mSensorManager.registerListener(this, stepCounter, SensorManager.SENSOR_DELAY_NORMAL);
-		mSensorManager.registerListener(this, stepDetector, SensorManager.SENSOR_DELAY_NORMAL);
+		
 	}
 
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		mSensorManager.unregisterListener(this, mLinearAcc);
+		
 	}
 	
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		// todo we have to carry this into another thread
-		//Log.v("LocationApp", "Sensor changed");
-		//if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-		//	tvAccX.setText("Acc. in X: " + event.values[0]);
-		//	tvAccY.setText("Acc. in Y: " + event.values[1]);
-		//	tvAccZ.setText("Acc. in Z: " + event.values[2]);
-		//}
-		
-		//inertial sensor code
-		if(event.sensor == mLinearAcc) {
-			if(oldTime != 0) {
-				timeDuration = (event.timestamp - oldTime) / (float)1000000000;
-				distanceX += Math.abs(initialVelocityX*timeDuration + (oldAccX/2)*timeDuration*timeDuration);
-				distanceY += Math.abs(initialVelocityY*timeDuration + (oldAccY/2)*timeDuration*timeDuration);
-				distanceZ += Math.abs(initialVelocityZ*timeDuration + (oldAccZ/2)*timeDuration*timeDuration);
-				initialVelocityX = initialVelocityX + oldAccX * timeDuration;
-				initialVelocityY = initialVelocityY + oldAccY * timeDuration;
-				initialVelocityZ = initialVelocityZ + oldAccZ * timeDuration;
-				valX.setText("X: " + distanceX + "m");
-				valY.setText("Y: " + distanceY + "m");
-				valZ.setText("Z: " + distanceZ + "m");
-			}
-			oldAccX = event.values[0] > 0.1f || event.values[0] < -0.1f ? event.values[0] - 0.1f*(Math.signum(event.values[0])) : 0;
-			oldAccY = event.values[1] > 0.1f || event.values[1] < -0.1f ? event.values[1] - 0.1f*(Math.signum(event.values[0])) : 0;
-			oldAccZ = event.values[2] > 0.1f || event.values[2] < -0.1f ? event.values[2] - 0.1f*(Math.signum(event.values[0])) : 0;
-			oldTime = event.timestamp;
-		}
-		else if(event.sensor == stepCounter) {
-			counter.setText("Total steps from boot: " + (int)event.values[0]);
-		}
-		else if(event.sensor == stepDetector) {
-			steps += (int)event.values[0];
-			detector.setText("Steps: " + steps);
-		}
-	}
-
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void onTaskCompleted() {
 		List<ScanResult> scanResults = wifiScan.getScanResults();

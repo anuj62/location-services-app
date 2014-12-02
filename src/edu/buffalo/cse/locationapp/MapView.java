@@ -5,7 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
@@ -80,5 +83,51 @@ public class MapView extends SurfaceView {
         canvas.drawCircle(x, y, bigCircle, paint2);
 	    surfaceHolder.unlockCanvasAndPost(canvas);
 		
+	}
+
+	public void drawPath(Path path, PointF center) {
+		Canvas canvas = surfaceHolder.lockCanvas(null);
+		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
+		Matrix mat = new Matrix();
+		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
+		path.transform(mat);
+		float pts[] = new float[2];
+		pts[0] = center.x;
+		pts[1] = center.y;
+		mat.mapPoints(pts);
+		center.set(pts[0], pts[1]);
+		Paint line = new Paint();
+		line.setColor(Color.rgb(0, 255, 0));
+		line.setStyle(Style.STROKE);
+		line.setStrokeWidth(5);
+		canvas.drawPath(path, line);
+		drawPoint(center, canvas);
+		surfaceHolder.unlockCanvasAndPost(canvas);
+	}
+	
+	private void drawPoint(PointF center, Canvas canvas) {
+		Paint circle = new Paint();
+		circle.setColor(Color.rgb(255, 0, 0));
+		circle.setStyle(Style.STROKE);
+		circle.setStrokeWidth(5);
+		canvas.drawCircle(center.x, center.y, 30, circle);
+		Paint dot = new Paint();
+		dot.setColor(Color.rgb(255, 0, 0));
+		dot.setStyle(Style.FILL);
+		canvas.drawCircle(center.x, center.y, 6, dot);
+	}
+	
+	public void drawLocation(PointF center) {
+		Canvas canvas = surfaceHolder.lockCanvas(null);
+		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
+		Matrix mat = new Matrix();
+		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
+		float pts[] = new float[2];
+		pts[0] = center.x;
+		pts[1] = center.y;
+		mat.mapPoints(pts);
+		center.set(pts[0], pts[1]);
+		drawPoint(center, canvas);
+		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
 }
