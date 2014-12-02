@@ -26,9 +26,8 @@ public class PedometerPathMapper implements PedometerEventListener {
 	private PedometerPathMapperEventListener mEvent;
 	private float mStrideLengthInPixels = 9.25f;
 
-	public PedometerPathMapper(PedometerPathMapperEventListener event, float strideLengthPixels) {
+	public PedometerPathMapper(PedometerPathMapperEventListener event) {
 		mEvent = event;
-		mStrideLengthInPixels = strideLengthPixels;
 	}
 	
 	private Walk getWalkFromSteps(ArrayList<PedometerEvent> stepList) {
@@ -70,6 +69,10 @@ public class PedometerPathMapper implements PedometerEventListener {
 	
 	public void resetPosition(PointF point) {
 		start = point;
+	}
+	
+	public void setStrideLength(float lengthInPixels) {
+		mStrideLengthInPixels = lengthInPixels;
 	}
 	
 	Thread walkStopped = new Thread(new Runnable() {
