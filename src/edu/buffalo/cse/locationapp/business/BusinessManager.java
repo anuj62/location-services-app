@@ -41,6 +41,7 @@ public class BusinessManager {
 	private JSONArray jsonarray = null;
 	private List<SignalSample> fingerPrintList = null;
 	private Context context = null;
+	private KNearestNeighbor algo = null;
 	
 	public BusinessManager(Context context) {
 		jsonarray = new JSONArray();
@@ -210,9 +211,11 @@ public class BusinessManager {
 	}
 
 	public Location getPosition(List<ScanResult> scanResult) {
-		// todo when data collection is completed, KNearestNeighbour should be initialized there, so the calculations should take place
-		// when the initialization completed, not everytime we get the location.
-		KNearestNeighbor algo = new KNearestNeighbor(fingerPrintList);
+		
+		// note first localization will take so much time
+		if (algo == null) {
+			algo = new KNearestNeighbor(fingerPrintList);
+		}
 		
 		return algo.PositionData(scanResult);
 	}
