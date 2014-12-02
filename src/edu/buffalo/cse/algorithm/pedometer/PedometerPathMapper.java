@@ -18,6 +18,9 @@ package edu.buffalo.cse.algorithm.pedometer;
 
 import java.util.ArrayList;
 
+import edu.buffalo.cse.locationapp.MapView;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 
@@ -25,9 +28,13 @@ public class PedometerPathMapper implements PedometerEventListener {
 	
 	private PedometerPathMapperEventListener mEvent;
 	private float mStrideLengthInPixels = 9.25f;
+	private Bitmap mBitmap;
+	private Canvas mCanvas;
 
-	public PedometerPathMapper(PedometerPathMapperEventListener event) {
+	public PedometerPathMapper(PedometerPathMapperEventListener event, MapView map) {
 		mEvent = event;
+		mBitmap = map.getBitmap();
+		mCanvas = map.getCanvas();
 	}
 	
 	private Walk getWalkFromSteps(ArrayList<PedometerEvent> stepList) {
@@ -84,8 +91,13 @@ public class PedometerPathMapper implements PedometerEventListener {
 			mat.setTranslate(start.x, start.y);
 			walk.transform(mat);
 			int len = walk.stepPoints.length;
-			start = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
-//			map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
+			point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
+			mat.setScale(((float)mCanvas.getWidth() / (float) mBitmap.getWidth()) * 3, ((float)mCanvas.getHeight() / (float)mBitmap.getHeight()) * 3);
+			pts[0] = point.x;
+			pts[1] = point.y;
+			mat.mapPoints(pts);
+			point.set(pts[0], pts[1]);
+//			map.drawPath(walk.path, point);
 		};
 	});
 	
@@ -94,6 +106,9 @@ public class PedometerPathMapper implements PedometerEventListener {
 		walkStopped.start();
 	}
 	
+	float pts[] = new float[2];
+	PointF point;
+	
 	Thread stepOccurred = new Thread(new Runnable() {
 
 		@Override
@@ -101,11 +116,17 @@ public class PedometerPathMapper implements PedometerEventListener {
 			// TODO Auto-generated method stub
 			walk = getWalkFromSteps(stepList);
 			mat.setTranslate(start.x, start.y);
-			walk.transform(mat);
+			mat.mapPoints(walk.stepPoints);
 			int len = walk.stepPoints.length;
-			mEvent.getLocation(new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
-//			map.drawLocation(new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
-//			map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
+			point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
+			mat.setScale(((float)mCanvas.getWidth() / (float) mBitmap.getWidth()) * 3, ((float)mCanvas.getHeight() / (float)mBitmap.getHeight()) * 3);
+			pts[0] = point.x;
+			pts[1] = point.y;
+			mat.mapPoints(pts);
+			point.set(pts[0], pts[1]);
+			mEvent.getLocation(point);
+//			map.drawLocation(point);
+//			map.drawPath(walk.path, point);
 		}
 	});
 	
