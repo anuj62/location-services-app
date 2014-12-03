@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import edu.buffalo.cse.locationapp.MapView;
 import android.graphics.Matrix;
+import android.graphics.Path;
 import android.graphics.PointF;
 
 public class PedometerPathMapper implements PedometerEventListener {
@@ -28,10 +29,25 @@ public class PedometerPathMapper implements PedometerEventListener {
 	private MapView map;
 	private PedometerPathMapperEventListener ppmel;
 	public static float sBoundaryStepSize = 5;
-
+	private Boolean isBackground = false;
+	private float scaleX = 0.9609375f;
+	private float scaleY = 1.4267578f;
+	
 	public PedometerPathMapper(PedometerPathMapperEventListener ppmel, MapView map) {
-		this.map = map;
 		this.ppmel = ppmel;
+		this.map = map;
+	}
+	
+	public void runInBackground() {
+		synchronized(isBackground) {
+			isBackground = true;
+		}
+	}
+	
+	public void runInForeground() {
+		synchronized (isBackground) {
+			isBackground = false;
+		}		
 	}
 	
 	private Walk getWalkFromSteps(ArrayList<PedometerEvent> stepList) {
@@ -63,11 +79,6 @@ public class PedometerPathMapper implements PedometerEventListener {
 	
 	ArrayList<PedometerEvent> stepList;
 
-	@Override
-	public void onWalkStarted(float directionAccuracy) {
-		stepList = new ArrayList<PedometerEvent>();
-	}
-
 	Walk walk;
 	PointF start = new PointF(285, 807);
 	
@@ -80,7 +91,12 @@ public class PedometerPathMapper implements PedometerEventListener {
 	}
 	
 	Matrix mat = new Matrix();
-	
+
+	@Override
+	public void onWalkStarted(float directionAccuracy) {
+		stepList = new ArrayList<PedometerEvent>();
+	}
+
 	@Override
 	public void onWalkStopped(int totalSteps) {
 		new Thread(new Runnable() {
@@ -93,7 +109,13 @@ public class PedometerPathMapper implements PedometerEventListener {
 					walk.transform(mat);
 					int len = walk.stepPoints.length;
 					start = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
-//					map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
+					point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
+					scalePathAndPoint(walk.path, point);
+					synchronized (isBackground) {
+						if(!isBackground) {
+							map.drawPath(walk.path, point);
+						}
+					}					
 				}
 			};
 		}).start();
@@ -102,7 +124,8 @@ public class PedometerPathMapper implements PedometerEventListener {
 	private PointF point;
 	private PointF boundaryCenter;
 	private double distance;
-	
+	private double dx, dy;
+
 	@Override
 	public void onStepOccurred(PedometerEvent pEvent, int stepNo) {
 		stepList.add(pEvent);
@@ -117,20 +140,46 @@ public class PedometerPathMapper implements PedometerEventListener {
 					mat.mapPoints(walk.stepPoints);
 					int len = walk.stepPoints.length;
 					point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
-					map.drawLocation(point);
-					if(boundaryCenter == null) {
-						boundaryCenter = point;
-					} else {
-						distance += Math.sqrt(Math.pow((point.x - boundaryCenter.x), 2) + Math.pow((point.y - boundaryCenter.y), 2));
-						if(distance > sBoundaryStepSize * mStrideLengthInPixels) {
-							ppmel.boundaryCrossed();
-							boundaryCenter = point;
-							distance = 0;
+					scaleLocation(point);
+					synchronized (isBackground) {
+						if(!isBackground) {
+							map.drawLocation(point);
 						}
 					}
+					checkBoundaryExceeding();
 //					map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
 				}
 			}
 		}).start();
+	}
+	
+	private void checkBoundaryExceeding() {
+		if(boundaryCenter == null) {
+			boundaryCenter = point;
+		} else {
+			dx = point.x - boundaryCenter.x;
+			dx = point.y - boundaryCenter.y;
+			distance = Math.sqrt((dx*dx) + (dy*dy));
+			if(distance > (sBoundaryStepSize * mStrideLengthInPixels)) {
+				ppmel.boundaryCrossed();
+				boundaryCenter = point;
+				distance = 0;
+			}
+		}
+	}
+	
+	float pts[] = new float[2];
+	
+	private void scaleLocation(PointF point) {
+		mat.setScale(scaleX, scaleY);
+		pts[0] = point.x;
+		pts[1] = point.y;
+		mat.mapPoints(pts);
+		point.set(pts[0], pts[1]);
+	}
+	
+	private void scalePathAndPoint(Path path, PointF point) {
+		scaleLocation(point);
+		path.transform(mat);		
 	}
 }

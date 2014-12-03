@@ -8,6 +8,7 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+<<<<<<< HEAD
     <item
         android:id="@+id/training_mode"
         android:orderInCategory="100"
@@ -19,5 +20,15 @@
         android:orderInCategory="100"
         android:title="@string/action_open_ui"
         app:showAsAction="never"/>
+=======
+    
+    <item
+        android:id="@+id/training_mode"
+        android:orderInCategory="100"
+        android:title="@string/training_mode"
+        android:checkable="true"
+        />
+    
+>>>>>>> fb41d779168644b218948cfc970946bb79dd8f39
 
 </menu>
