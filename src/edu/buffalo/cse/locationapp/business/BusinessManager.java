@@ -23,15 +23,9 @@ import android.content.SharedPreferences.Editor;
 import android.net.wifi.ScanResult;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import edu.buffalo.cse.algorithm.knearestneighbor.KNearestNeighbor;
 import edu.buffalo.cse.algorithm.knearestneighbor.SignalSample;
-import edu.buffalo.cse.locationapp.dataaccess.PMAccessPoint;
-import edu.buffalo.cse.locationapp.dataaccess.PMFactory;
-import edu.buffalo.cse.locationapp.dataaccess.PMLocation;
-import edu.buffalo.cse.locationapp.dataaccess.PMSignalStrength;
-import edu.buffalo.cse.locationapp.dataaccess.PersistencyManager;
 import edu.buffalo.cse.locationapp.entity.AccessPoint;
 import edu.buffalo.cse.locationapp.entity.Fingerprint;
 import edu.buffalo.cse.locationapp.entity.Location;
@@ -45,6 +39,14 @@ public class BusinessManager {
 	
 	public BusinessManager(Context context) {
 		jsonarray = new JSONArray();
+	}
+	
+	public void setFingerprintList(List<SignalSample> fingerPrintList) {
+		this.fingerPrintList = fingerPrintList;
+	}
+	
+	public List<SignalSample> getFingerprintList() {
+		return fingerPrintList;
 	}
 
 	public void saveFingerprint(Location location, List<ScanResult> scanResult) {
@@ -109,7 +111,7 @@ public class BusinessManager {
 		if (isExternalStorageWritable()) {
 			try {
 				File extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
-            	FileOutputStream out = new FileOutputStream(extFile);
+            	FileOutputStream out = new FileOutputStream(extFile, true);
 
             	out.write(jsonarray.toString().getBytes());
             	out.flush();
@@ -129,7 +131,7 @@ public class BusinessManager {
 	}
 	
 	//todo
-	public JSONArray loadExternal(){
+	private void loadFingerprint(){
 		JSONObject storyObj = null;
 		
 		try{
@@ -159,13 +161,11 @@ public class BusinessManager {
 	    }catch(JSONException e) {
 	         Log.e("log_tag", "Error returning string "+e.toString());
 	    }
-	    return null;
-	//and of openJson() 
 	}
 	
 	
 	/* Checks if external storage is available for read and write */
-	public boolean isExternalStorageWritable() {
+	private boolean isExternalStorageWritable() {
 	    String state = Environment.getExternalStorageState();
 	    if (Environment.MEDIA_MOUNTED.equals(state)) {
 	        return true;

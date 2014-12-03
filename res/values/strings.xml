@@ -8,5 +8,8 @@
     <string name="ycoordinate">Y Co-ordinates</string>
     <string name="fzero">0.0</string>
     <string name="izero">0</string>
+    <string name="positioning_mode">Positioning Mode</string>
+    <string name="training_mode">Training Mode</string>
+    <string name="program_mode">Choose Mode</string>
 
 </resources>
