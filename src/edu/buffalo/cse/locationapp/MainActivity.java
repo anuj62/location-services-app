@@ -180,6 +180,9 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
         else if(id == R.id.action_savedata){
     		wifiScan.saveData();
     	}
+        else if(id == R.id.action_loaddata){
+    		wifiScan.loadData();
+    	}
         return super.onOptionsItemSelected(item);
     }
 

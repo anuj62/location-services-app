@@ -52,6 +52,53 @@ public class BusinessManager {
 		return fingerPrintList;
 	}
 	
+
+	public void loadData() {
+		try{  
+	        File localizationFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
+            FileInputStream stream = new FileInputStream(localizationFile);
+            String jsonStr = null;
+            try {
+                FileChannel fc = stream.getChannel();
+                MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+
+                jsonStr = Charset.defaultCharset().decode(bb).toString();
+              }
+              finally {
+                stream.close();
+              }
+            
+            JSONObject jsonObj = new JSONObject(jsonStr);
+            JSONArray data  = jsonObj.getJSONArray("ScanData");
+            
+            fingerPrintList = new ArrayList<SignalSample>();
+            SignalSample tempSample = null;
+
+            // looping through All nodes
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject c = data.getJSONObject(i);
+                
+                tempSample = new SignalSample();
+                tempSample.setXCoordinate(c.getInt("X"));
+                tempSample.setYCoordinate(c.getInt("Y"));
+                tempSample.setMapID(c.getInt("MapID"));
+                tempSample.setTag(c.getString("Tag"));
+                tempSample.setSSID(c.getString("SSID"));
+                tempSample.setMacAddress(c.getString("BSSID"));
+                tempSample.setFrequency(c.getInt("Frequency"));
+                tempSample.setScanDateTime(c.getLong("TimeStamp"));
+                tempSample.setCapabilities(c.getString("Capabilities"));
+                tempSample.setRSSI(c.getInt("SignalStrength"));
+                
+                fingerPrintList.add(tempSample);
+              }
+
+
+       } catch (Exception e) {
+       e.printStackTrace();
+      }
+    }
+	
 	public void saveData() {
 		if (fingerPrintList != null && fingerPrintList.size() > 0) {
 			JSONObject mainJsonObject = new JSONObject();
@@ -118,7 +165,7 @@ public class BusinessManager {
 			fingerPrintList = new ArrayList<SignalSample>();
 		}
 		
-		scanResult = MergeSSID(scanResult);
+		scanResult = mergeSSID(scanResult);
 		
 		SignalSample tempSignalSample = null;
 		for (int i = 0; i < scanResult.size(); i++) {
@@ -143,55 +190,6 @@ public class BusinessManager {
 	}
 	
 
-	private void loadFingerprint(){
-		try{  
-	        File localizationFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
-            FileInputStream stream = new FileInputStream(localizationFile);
-            String jsonStr = null;
-            try {
-                FileChannel fc = stream.getChannel();
-                MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-
-                jsonStr = Charset.defaultCharset().decode(bb).toString();
-              }
-              finally {
-                stream.close();
-              }
-            
-            JSONObject jsonObj = new JSONObject(jsonStr);
-
-            // Getting data JSON Array nodes
-            JSONArray data  = jsonObj.getJSONArray("ScanData");
-
-            // looping through All nodes
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject c = data.getJSONObject(i);
-                
-                //todo
-                
-                String id = c.getString("id");
-                String title = c.getString("title");
-                String duration = c.getString("duration");
-                //use >  int id = c.getInt("duration"); if you want get an int
-
-
-                // tmp hashmap for single node
-                HashMap<String, String> parsedData = new HashMap<String, String>();
-
-                // adding each child node to HashMap key => value
-                parsedData.put("id", id);
-                parsedData.put("title", title);
-                parsedData.put("duration", duration);
-
-
-                // do what do you want on your interface
-              }
-
-
-       } catch (Exception e) {
-       e.printStackTrace();
-      }
-    }
 	
 	
 	/* Checks if external storage is available for read and write */
@@ -213,7 +211,7 @@ public class BusinessManager {
 	    return false;
 	}
 	
-	private List<ScanResult> MergeSSID(List<ScanResult> result) {
+	public List<ScanResult> mergeSSID(List<ScanResult> result) {
 		
 		HashMap<String,ScanResult> tempMap = new HashMap<String, ScanResult>();
 		

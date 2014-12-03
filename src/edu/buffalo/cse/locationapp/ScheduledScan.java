@@ -8,6 +8,7 @@ import constants.Constants;
 import edu.buffalo.cse.locationapp.business.BusinessManager;
 import edu.buffalo.cse.locationapp.entity.Location;
 import android.content.Context;
+import android.database.MergeCursor;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -59,6 +60,10 @@ public class ScheduledScan implements Runnable {
 		bm.saveData();
 	}
 	
+	public void loadData() {
+		bm.loadData();
+	}
+	
 	@Override
 	public void run() {
 		if (isTrainingMode) {
@@ -99,6 +104,7 @@ public class ScheduledScan implements Runnable {
 				bm.saveFingerprint(location, scanResult);
 			}
 			else {
+				scanResult = bm.mergeSSID(scanResult);
 				calculatedLocation = bm.getPosition(scanResult);
 			}
 			
