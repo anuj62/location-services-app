@@ -55,6 +55,10 @@ public class ScheduledScan implements Runnable {
 		bm = new BusinessManager(context);
 	}
 	
+	public void saveData() {
+		bm.saveData();
+	}
+	
 	@Override
 	public void run() {
 		if (isTrainingMode) {

@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,6 +51,67 @@ public class BusinessManager {
 	public List<SignalSample> getFingerprintList() {
 		return fingerPrintList;
 	}
+	
+	public void saveData() {
+		if (fingerPrintList != null && fingerPrintList.size() > 0) {
+			JSONObject mainJsonObject = new JSONObject();
+			JSONObject tempJsonObject = null;
+			
+			JSONArray scanArray = new JSONArray();
+			
+			for (int i = 0; i < fingerPrintList.size(); i++) {
+				tempJsonObject = new JSONObject();
+				try{
+					tempJsonObject.put("X", fingerPrintList.get(i).getXCoordinate());
+					tempJsonObject.put("Y", fingerPrintList.get(i).getYCoordinate());
+					tempJsonObject.put("MapID", fingerPrintList.get(i).getMapID());
+					tempJsonObject.put("Tag", fingerPrintList.get(i).getTag());
+					tempJsonObject.put("SSID", fingerPrintList.get(i).getSSID());
+					tempJsonObject.put("BSSID", fingerPrintList.get(i).getMacAddress());
+					tempJsonObject.put("Frequency", fingerPrintList.get(i).getFrequency());
+					tempJsonObject.put("TimeStamp", fingerPrintList.get(i).getScanDateTime());
+					tempJsonObject.put("Capabilities", fingerPrintList.get(i).getCapabilities());
+					tempJsonObject.put("SignalStrength", fingerPrintList.get(i).getRSSI());
+				}
+				catch (Exception ex) {
+					Log.e("JSON Exception", "Error creating JSON Object");
+				}
+				
+				scanArray.put(tempJsonObject);
+			}
+			
+			try {
+				mainJsonObject.put("ScanData", scanArray);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if (isExternalStorageWritable()) {
+				try {
+					File extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
+	            	FileOutputStream out = new FileOutputStream(extFile, true);
+
+	            	out.write(jsonarray.toString().getBytes());
+	            	out.flush();
+	            	out.close();
+				}
+				catch (Exception ex) {
+					Log.e("LocalizationApp", ex.toString());
+				}
+			}
+			else {
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	        	Editor editor = prefs.edit();
+	        	editor.putString("key", jsonarray.toString());
+	        	editor.commit();
+			}
+
+			
+			
+			
+		}
+	}
 
 	public void saveFingerprint(Location location, List<ScanResult> scanResult) {
 		if (fingerPrintList == null) {
@@ -75,93 +139,59 @@ public class BusinessManager {
 			fingerPrintList.add(tempSignalSample);
 		}
 		
-		JSONArray scanArray = new JSONArray();
-		
-		for (int i = 0; i < scanResult.size(); i++) {
-			JSONObject tempJsonObject = new JSONObject();
-			try{
-				tempJsonObject.put("SSID", scanResult.get(i).SSID);
-				tempJsonObject.put("BSSID", scanResult.get(i).BSSID);
-				tempJsonObject.put("Frequency", scanResult.get(i).frequency);
-				tempJsonObject.put("TimeStamp", scanResult.get(i).timestamp);
-				tempJsonObject.put("Capabilities", scanResult.get(i).capabilities);
-				tempJsonObject.put("SignalStrength", scanResult.get(i).level);
-			}
-			catch (Exception ex) {
-				Log.e("JSON Exception", "Error creating JSON Object");
-			}
-			
-			scanArray.put(tempJsonObject);
-		}
-		
-		JSONObject locationObject = new JSONObject();
-		
-		try {
-			locationObject.put("Tag", location.getTag());
-			locationObject.put("X", location.getXLocation());
-			locationObject.put("Y", location.getYLocation());
-			locationObject.put("MapID", location.getMapID());
-			locationObject.put("Scan", scanArray);
-		} catch (Exception ex) {
-			Log.e("JSON Exception", "Error creating Location JSON Object");
-		}
-		
-		jsonarray.put(locationObject);
-		
-		if (isExternalStorageWritable()) {
-			try {
-				File extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
-            	FileOutputStream out = new FileOutputStream(extFile, true);
-
-            	out.write(jsonarray.toString().getBytes());
-            	out.flush();
-            	out.close();
-			}
-			catch (Exception ex) {
-				Log.e("LocalizationApp", ex.toString());
-			}
-		}
-		else {
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        	Editor editor = prefs.edit();
-        	editor.putString("key", jsonarray.toString());
-        	editor.commit();
-		}
-        
+		        
 	}
 	
-	//todo
+
 	private void loadFingerprint(){
-		JSONObject storyObj = null;
-		
-		try{
+		try{  
+	        File localizationFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
+            FileInputStream stream = new FileInputStream(localizationFile);
+            String jsonStr = null;
+            try {
+                FileChannel fc = stream.getChannel();
+                MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 
-	        FileInputStream fileInput = new FileInputStream(new File("/android/data/localizationApp/fingerprint.json"));
+                jsonStr = Charset.defaultCharset().decode(bb).toString();
+              }
+              finally {
+                stream.close();
+              }
+            
+            JSONObject jsonObj = new JSONObject(jsonStr);
 
-	        BufferedReader inputReader = new BufferedReader(new InputStreamReader(fileInput, "UTF-8"), 8);
-	        StringBuilder strBuilder = new StringBuilder();
-	            String line = null;
-	            while ((line = inputReader.readLine()) != null) {
-	                strBuilder.append(line + "\n");
-	            }
-	            fileInput.close();
-	            storyObj = null;//todo strBuilder.toString();
+            // Getting data JSON Array nodes
+            JSONArray data  = jsonObj.getJSONArray("ScanData");
 
-	    }catch(IOException e){
-	         Log.e("log_tag", "Error building string "+e.toString());
-	    }
+            // looping through All nodes
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject c = data.getJSONObject(i);
+                
+                //todo
+                
+                String id = c.getString("id");
+                String title = c.getString("title");
+                String duration = c.getString("duration");
+                //use >  int id = c.getInt("duration"); if you want get an int
 
-	    try{
-	        JSONArray jArray = new JSONArray(storyObj);
-	        String storyNames = "";
-	        for(int i = 0;i<jArray.length();i++){
-	            storyNames += jArray.getJSONObject(i).getString("story_name") +"\n";
-	        }
 
-	    }catch(JSONException e) {
-	         Log.e("log_tag", "Error returning string "+e.toString());
-	    }
-	}
+                // tmp hashmap for single node
+                HashMap<String, String> parsedData = new HashMap<String, String>();
+
+                // adding each child node to HashMap key => value
+                parsedData.put("id", id);
+                parsedData.put("title", title);
+                parsedData.put("duration", duration);
+
+
+                // do what do you want on your interface
+              }
+
+
+       } catch (Exception e) {
+       e.printStackTrace();
+      }
+    }
 	
 	
 	/* Checks if external storage is available for read and write */
