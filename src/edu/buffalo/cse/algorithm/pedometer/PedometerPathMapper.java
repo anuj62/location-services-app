@@ -18,7 +18,6 @@ package edu.buffalo.cse.algorithm.pedometer;
 
 import java.util.ArrayList;
 
-import edu.buffalo.cse.locationapp.MapView;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -26,16 +25,16 @@ import android.graphics.PointF;
 public class PedometerPathMapper implements PedometerEventListener {
 	
 	private float mStrideLengthInPixels = 9.25f;
-	private MapView map;
+//	private MapView map;
 	private PedometerPathMapperEventListener ppmel;
 	public static float sBoundaryStepSize = 5;
 	private Boolean isBackground = false;
 	private float scaleX = 0.9609375f;
 	private float scaleY = 1.4267578f;
 	
-	public PedometerPathMapper(PedometerPathMapperEventListener ppmel, MapView map) {
+	public PedometerPathMapper(PedometerPathMapperEventListener ppmel) {
 		this.ppmel = ppmel;
-		this.map = map;
+//		this.map = map;
 	}
 	
 	public void runInBackground() {
@@ -47,7 +46,7 @@ public class PedometerPathMapper implements PedometerEventListener {
 	public void runInForeground() {
 		synchronized (isBackground) {
 			isBackground = false;
-		}		
+		}
 	}
 	
 	private Walk getWalkFromSteps(ArrayList<PedometerEvent> stepList) {
@@ -111,11 +110,11 @@ public class PedometerPathMapper implements PedometerEventListener {
 					start = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
 					point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
 					scalePathAndPoint(walk.path, point);
-					synchronized (isBackground) {
-						if(!isBackground) {
-							map.drawPath(walk.path, point);
-						}
-					}					
+//					synchronized (isBackground) {
+//						if(!isBackground) {
+//							map.drawPath(walk.path, point);
+//						}
+//					}					
 				}
 			};
 		}).start();
@@ -141,11 +140,11 @@ public class PedometerPathMapper implements PedometerEventListener {
 					int len = walk.stepPoints.length;
 					point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
 					scaleLocation(point);
-					synchronized (isBackground) {
-						if(!isBackground) {
-							map.drawLocation(point);
-						}
-					}
+//					synchronized (isBackground) {
+//						if(!isBackground) {
+//							map.drawLocation(point);
+//						}
+//					}
 					checkBoundaryExceeding();
 //					map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
 				}

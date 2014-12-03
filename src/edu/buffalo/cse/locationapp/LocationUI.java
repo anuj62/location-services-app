@@ -7,10 +7,14 @@ import java.util.Locale;
 
 import constants.Constants;
 import constants.Locations;
+import edu.buffalo.cse.algorithm.pedometer.Pedometer;
+import edu.buffalo.cse.algorithm.pedometer.PedometerPathMapper;
+import edu.buffalo.cse.algorithm.pedometer.PedometerPathMapperEventListener;
 import edu.buffalo.cse.locationapp.business.BusinessManager;
 import edu.buffalo.cse.locationapp.entity.Location;
 import gps.GPSSensor;
 import android.app.Activity;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationListener;
@@ -27,7 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LocationUI extends Activity implements OnItemSelectedListener{
+public class LocationUI extends Activity implements OnItemSelectedListener, PedometerPathMapperEventListener{
 	Spinner mSpinner;
 	private static final String TAG = "LocationUI";
 	TextView mCurrentLocationView;
@@ -40,6 +44,10 @@ public class LocationUI extends Activity implements OnItemSelectedListener{
 	String fingerprintlocation;
 	String gpsLocation;
 	NfcAdapter mNfcAdapter;
+	int count;
+	
+	private Pedometer ped;
+	private PedometerPathMapper ppm;
 	
 	public LocationUI() {
 		// TODO Auto-generated constructor stub
@@ -65,10 +73,32 @@ public class LocationUI extends Activity implements OnItemSelectedListener{
 			
 		}
 		
-		
+		ppm = new PedometerPathMapper(this);
+		ped = new Pedometer((SensorManager)getSystemService(SENSOR_SERVICE), ppm);
+		ped.start();
+
 		gpsSensor = new GPSSensor(handler);
 	}
 
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		ped.stop();
+	}
+	
 	public void onItemSelected(AdapterView<?> parent, View view, int position,long id) {
 		
 		mResolution = (String)parent.getItemAtPosition(position);
@@ -155,6 +185,18 @@ public class LocationUI extends Activity implements OnItemSelectedListener{
 	
 	String getGPSLocation(){
 		return "Davis Hall";
+	}
+
+	@Override
+	public void boundaryCrossed() {
+		
+		LocationUI.this.runOnUiThread(new Runnable() {
+			  public void run() {
+				  count++;
+				  Toast.makeText(LocationUI.this, "Scanning..."+count, Toast.LENGTH_SHORT).show();
+			  }
+			});
+		
 	}
 	
 

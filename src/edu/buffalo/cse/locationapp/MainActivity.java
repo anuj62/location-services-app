@@ -69,8 +69,6 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 	private ImageView ivMap;
 	private MapView mapMap;
 	
-	private Pedometer ped;
-	private PedometerPathMapper ppm;
 	edu.buffalo.cse.locationapp.entity.Location clickLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,18 +93,7 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
         
         
         mapMap = (MapView) this.findViewById(R.id.dummymap);
-        mapMap.setOnTouchListener(clickListener);
-        
-        ppm = new PedometerPathMapper(new PedometerPathMapperEventListener() {
-			
-			@Override
-			public void boundaryCrossed() {
-				// TODO Auto-generated method stub
-				
-			}
-		}, mapMap);
-        ped = new Pedometer(mSensorManager, ppm);
-        ped.start();
+        mapMap.setOnTouchListener(clickListener);       
     }
     
     Handler handler = new Handler(){
@@ -227,21 +214,18 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		ppm.runInForeground();
 	}
 
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		ppm.runInBackground();
 	}
 	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		ped.stop();
 	}
 	
 	@Override
