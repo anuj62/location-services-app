@@ -8,5 +8,16 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/training_mode"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/action_ui"
+        android:orderInCategory="100"
+        android:title="@string/action_open_ui"
+        app:showAsAction="never"/>
 
 </menu>

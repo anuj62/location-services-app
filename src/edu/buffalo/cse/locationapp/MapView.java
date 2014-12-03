@@ -135,4 +135,10 @@ public class MapView extends SurfaceView {
 		drawPoint(center);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
+	
+	protected void onDraw(Canvas i_canvas){
+		super.onDraw(i_canvas);
+		canvas = surfaceHolder.lockCanvas(null);
+	}
+	
 }
