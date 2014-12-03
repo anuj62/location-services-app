@@ -106,6 +106,7 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 			}
 		}, mapMap);
         ped = new Pedometer(mSensorManager, ppm);
+        ped.start();
     }
     
     Handler handler = new Handler(){
@@ -226,12 +227,21 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		ppm.runInForeground();
 	}
 
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
+		ppm.runInBackground();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		ped.stop();
 	}
 	
 	@Override
