@@ -16,6 +16,7 @@
     <string name="training_mode">Training Mode</string>
     <string name="program_mode">Choose Mode</string>
     <string name="action_savedata">Save Data</string>
+    <string name="action_loaddata">Load Data</string>
 
 
 </resources>

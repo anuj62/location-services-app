@@ -26,6 +26,11 @@
         android:orderInCategory="100"
         android:title="@string/action_savedata"
         app:showAsAction="never"/>
+        <item
+        android:id="@+id/action_loaddata"
+        android:orderInCategory="100"
+        android:title="@string/action_loaddata"
+        app:showAsAction="never"/>
 
     
     
