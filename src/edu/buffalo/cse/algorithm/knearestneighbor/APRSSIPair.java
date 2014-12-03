@@ -40,7 +40,7 @@ public class APRSSIPair implements Comparable<APRSSIPair>
 	@Override
 	public int compareTo(APRSSIPair another) {
 		int returnValue = 0;
-
+		/*
 	     if (this != null && another == null)
 	     {
 	        returnValue = 1;
@@ -65,6 +65,9 @@ public class APRSSIPair implements Comparable<APRSSIPair>
 	        	}
 	        }
 	     }
-	     return returnValue;
+	     */
+		
+		returnValue = this.getAPMac().compareTo(another.getAPMac());
+	    return returnValue;
 	}
 }
