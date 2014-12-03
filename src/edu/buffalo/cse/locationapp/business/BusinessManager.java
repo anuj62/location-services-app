@@ -111,7 +111,7 @@ public class BusinessManager {
 		if (isExternalStorageWritable()) {
 			try {
 				File extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
-            	FileOutputStream out = new FileOutputStream(extFile);
+            	FileOutputStream out = new FileOutputStream(extFile, true);
 
             	out.write(jsonarray.toString().getBytes());
             	out.flush();
