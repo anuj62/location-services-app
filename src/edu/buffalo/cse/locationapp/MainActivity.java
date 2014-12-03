@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewDebug.FlagToString;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -67,6 +68,7 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         
         //inertial sensor code
@@ -114,6 +116,8 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
             		MapTextInput mapText = new MapTextInput(handler);
             		mapMap.drawCircle(event.getX(), event.getY());
                 	handler.post(mapText);
+                	
+                	//todo wait until mapText is entered.
 				
             		wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, new edu.buffalo.cse.locationapp.entity.Location(mapText.getInput(), (int)event.getX(), (int)event.getY(), null));
                 	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());

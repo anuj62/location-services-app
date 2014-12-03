@@ -89,13 +89,13 @@ public class ScheduledScan implements Runnable {
 		if (wm.startScan()) {
 			scanResult = wm.getScanResults();
 			
+			Location calculatedLocation = null;
+			
 			if ((location != null) && (isTrainingMode)) {
-				//todo solve exception
-				//bm.saveFingerprint(location, scanResult);
+				bm.saveFingerprint(location, scanResult);
 			}
 			else {
-				//todo this will return the result as Location object
-				bm.getPosition(scanResult);
+				calculatedLocation = bm.getPosition(scanResult);
 			}
 			
 			Log.v("LocationApp", Integer.toString(scanResult.size()));
@@ -104,7 +104,10 @@ public class ScheduledScan implements Runnable {
 			bundle.putInt("MessageType", Constants.MESSAGE_WIFI);
 			bundle.putString("ListSize", "Scan Result: "+scanResult.size());
 			bundle.putString("ListInfo", "Wifi622 Signal Strenth: " + printInfo(scanResult)); //BugFix: key name same as previous. Was "ListSize"
-			//todo send calculated location to main activity
+			//note: sending calculated location to mainactivity
+			if (calculatedLocation != null) {
+				bundle.putString("Location", calculatedLocation.getTag() + " , " + calculatedLocation.getXLocation()+ " , " + calculatedLocation.getYLocation());
+			}
 			msg.setData(bundle);
 			this.handler.sendMessage(msg);
 		}
