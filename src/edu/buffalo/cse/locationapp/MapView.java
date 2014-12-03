@@ -1,5 +1,7 @@
 package edu.buffalo.cse.locationapp;
 
+import edu.buffalo.cse.algorithm.pedometer.PedometerPathMapperEventListener;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,14 +21,6 @@ public class MapView extends SurfaceView {
 	private SurfaceHolder surfaceHolder;
     private Bitmap bmpIcon;
     private Canvas canvas;
-    
-    public Bitmap getBitmap() {
-    	return bmpIcon;
-    }
-    
-    public Canvas getCanvas() {
-    	return canvas;
-    }
     
     int smallCircle = 16;
     int bigCircle = 20;
@@ -110,6 +104,12 @@ public class MapView extends SurfaceView {
 	public void drawPath(Path path, PointF center) {
 		canvas = surfaceHolder.lockCanvas(null);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
+		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
+		path.transform(mat);
+		pts[0] = center.x;
+		pts[1] = center.y;
+		mat.mapPoints(pts);
+		center.set(pts[0], pts[1]);
 		Paint line = new Paint();
 		line.setColor(Color.rgb(0, 255, 0));
 		line.setStyle(Style.STROKE);
@@ -127,6 +127,11 @@ public class MapView extends SurfaceView {
 	public void drawLocation(PointF center) {
 		canvas = surfaceHolder.lockCanvas(null);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
+		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
+		pts[0] = center.x;
+		pts[1] = center.y;
+		mat.mapPoints(pts);
+		center.set(pts[0], pts[1]);
 		drawPoint(center);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}

@@ -19,22 +19,19 @@ package edu.buffalo.cse.algorithm.pedometer;
 import java.util.ArrayList;
 
 import edu.buffalo.cse.locationapp.MapView;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 
 public class PedometerPathMapper implements PedometerEventListener {
 	
-	private PedometerPathMapperEventListener mEvent;
 	private float mStrideLengthInPixels = 9.25f;
-	private Bitmap mBitmap;
-	private Canvas mCanvas;
+	private MapView map;
+	private PedometerPathMapperEventListener ppmel;
+	public static float sBoundaryStepSize = 5;
 
-	public PedometerPathMapper(PedometerPathMapperEventListener event, MapView map) {
-		mEvent = event;
-		mBitmap = map.getBitmap();
-		mCanvas = map.getCanvas();
+	public PedometerPathMapper(PedometerPathMapperEventListener ppmel, MapView map) {
+		this.map = map;
+		this.ppmel = ppmel;
 	}
 	
 	private Walk getWalkFromSteps(ArrayList<PedometerEvent> stepList) {
@@ -83,56 +80,57 @@ public class PedometerPathMapper implements PedometerEventListener {
 	}
 	
 	Matrix mat = new Matrix();
-	Thread walkStopped = new Thread(new Runnable() {
-		
-		@Override
-		public synchronized void run() {
-			walk = getWalkFromSteps(stepList);
-			mat.setTranslate(start.x, start.y);
-			walk.transform(mat);
-			int len = walk.stepPoints.length;
-			point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
-			mat.setScale(((float)mCanvas.getWidth() / (float) mBitmap.getWidth()) * 3, ((float)mCanvas.getHeight() / (float)mBitmap.getHeight()) * 3);
-			pts[0] = point.x;
-			pts[1] = point.y;
-			mat.mapPoints(pts);
-			point.set(pts[0], pts[1]);
-//			map.drawPath(walk.path, point);
-		};
-	});
 	
 	@Override
 	public void onWalkStopped(int totalSteps) {
-		walkStopped.start();
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				synchronized(this) {
+					walk = getWalkFromSteps(stepList);
+					mat.setTranslate(start.x, start.y);
+					walk.transform(mat);
+					int len = walk.stepPoints.length;
+					start = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
+//					map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
+				}
+			};
+		}).start();
 	}
 	
-	float pts[] = new float[2];
-	PointF point;
-	
-	Thread stepOccurred = new Thread(new Runnable() {
-
-		@Override
-		public synchronized void run() {
-			// TODO Auto-generated method stub
-			walk = getWalkFromSteps(stepList);
-			mat.setTranslate(start.x, start.y);
-			mat.mapPoints(walk.stepPoints);
-			int len = walk.stepPoints.length;
-			point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
-			mat.setScale(((float)mCanvas.getWidth() / (float) mBitmap.getWidth()) * 3, ((float)mCanvas.getHeight() / (float)mBitmap.getHeight()) * 3);
-			pts[0] = point.x;
-			pts[1] = point.y;
-			mat.mapPoints(pts);
-			point.set(pts[0], pts[1]);
-			mEvent.getLocation(point);
-//			map.drawLocation(point);
-//			map.drawPath(walk.path, point);
-		}
-	});
+	private PointF point;
+	private PointF boundaryCenter;
+	private double distance;
 	
 	@Override
 	public void onStepOccurred(PedometerEvent pEvent, int stepNo) {
 		stepList.add(pEvent);
-		stepOccurred.start();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				synchronized(this) {
+					walk = getWalkFromSteps(stepList);
+					mat.setTranslate(start.x, start.y);
+					mat.mapPoints(walk.stepPoints);
+					int len = walk.stepPoints.length;
+					point = new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]);
+					map.drawLocation(point);
+					if(boundaryCenter == null) {
+						boundaryCenter = point;
+					} else {
+						distance += Math.sqrt(Math.pow((point.x - boundaryCenter.x), 2) + Math.pow((point.y - boundaryCenter.y), 2));
+						if(distance > sBoundaryStepSize * mStrideLengthInPixels) {
+							ppmel.boundaryCrossed();
+							boundaryCenter = point;
+							distance = 0;
+						}
+					}
+//					map.drawPath(walk.path, new PointF(walk.stepPoints[len - 2], walk.stepPoints[len - 1]));
+				}
+			}
+		}).start();
 	}
 }
