@@ -5,6 +5,9 @@ import java.util.Timer;
 
 import constants.Constants;
 
+import edu.buffalo.cse.algorithm.pedometer.Pedometer;
+import edu.buffalo.cse.algorithm.pedometer.PedometerPathMapper;
+import edu.buffalo.cse.algorithm.pedometer.PedometerPathMapperEventListener;
 import edu.buffalo.cse.locationapp.business.BusinessManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,6 +15,7 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -64,18 +68,22 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 	private TextView tvGps, tvAccX, tvAccY, tvAccZ, tvWifi;
 	private ImageView ivMap;
 	private MapView mapMap;
-
+	
+	private Pedometer ped;
+	private PedometerPathMapper ppm;
+	edu.buffalo.cse.locationapp.entity.Location clickLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
         setContentView(R.layout.activity_main);
         
         //inertial sensor code
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-		 
+        
         tvGps = (TextView)this.findViewById(R.id.displaytext);
-        tvAccX = (TextView)this.findViewById(R.id.xcoor);
+        //tvAccX = (TextView)this.findViewById(R.id.xcoor);
         //tvAccY = (TextView)this.findViewById(R.id.ycoor);
         //tvAccZ = (TextView)this.findViewById(R.id.zcoor);
         tvWifi = (TextView)this.findViewById(R.id.wifidata);
@@ -88,7 +96,17 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
         
         mapMap = (MapView) this.findViewById(R.id.dummymap);
         mapMap.setOnTouchListener(clickListener);
-       
+        
+        ppm = new PedometerPathMapper(new PedometerPathMapperEventListener() {
+			
+			@Override
+			public void boundaryCrossed() {
+				// TODO Auto-generated method stub
+				
+			}
+		}, mapMap);
+        ped = new Pedometer(mSensorManager, ppm);
+        ped.start();
     }
     
     Handler handler = new Handler(){
@@ -100,6 +118,10 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
     			break;
     		case Constants.MESSAGE_INPUTTEXT:
     			Toast.makeText(MainActivity.this, msg.getData().getString(Constants.DATA_INPUTTEXT), Toast.LENGTH_SHORT).show();
+    			//TODO: store this variable in the scan results
+    			String currentLocation = msg.getData().getString(Constants.DATA_INPUTTEXT);
+    			wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, clickLocation);
+            	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
     			break;
     			default:
     			
@@ -115,21 +137,25 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
             	if (event.getAction() == MotionEvent.ACTION_DOWN){
             		MapTextInput mapText = new MapTextInput(handler);
             		mapMap.drawCircle(event.getX(), event.getY());
+            		clickLocation = new edu.buffalo.cse.locationapp.entity.Location(mapText.getInput(), (int)event.getX(), (int)event.getY(), null);
                 	handler.post(mapText);
                 	
                 	//todo wait until mapText is entered.
-				
+				/*
             		wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, new edu.buffalo.cse.locationapp.entity.Location(mapText.getInput(), (int)event.getX(), (int)event.getY(), null));
                 	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
                             	
             		Log.i("CSE622:", "Scan Started: " +
             			String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()));
+            			*/
             	}
             }
             else {
             	// if the ScheduledScan is created without a location, then it means the program is in positioning mode
+            	
             	wifiScan = new ScheduledScan(getApplicationContext(), wm, handler);
             	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+            	
             }
             return true;
             
@@ -160,6 +186,9 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
         	else {
         		isTrainingMode = false;
         	}
+        }else if(id == R.id.action_ui){
+        	Intent i = new Intent(this, LocationUI.class);
+        	startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -198,14 +227,21 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+		ppm.runInForeground();
 	}
 
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		
+		ppm.runInBackground();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		ped.stop();
 	}
 	
 	@Override

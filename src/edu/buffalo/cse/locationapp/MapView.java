@@ -83,7 +83,6 @@ public class MapView extends SurfaceView {
 
 	public void drawCircle(float x, float y) {
 		// TODO Auto-generated method stub
-		
 		canvas = surfaceHolder.lockCanvas(null);
         canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
     	Paint paint1 = new Paint();
@@ -95,21 +94,11 @@ public class MapView extends SurfaceView {
         paint2.setStyle(Style.STROKE);
         canvas.drawCircle(x, y, bigCircle, paint2);
 	    surfaceHolder.unlockCanvasAndPost(canvas);
-		
 	}
-
-	Matrix mat = new Matrix();
-	float pts[] = new float[2];
 	
 	public void drawPath(Path path, PointF center) {
 		canvas = surfaceHolder.lockCanvas(null);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
-		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
-		path.transform(mat);
-		pts[0] = center.x;
-		pts[1] = center.y;
-		mat.mapPoints(pts);
-		center.set(pts[0], pts[1]);
 		Paint line = new Paint();
 		line.setColor(Color.rgb(0, 255, 0));
 		line.setStyle(Style.STROKE);
@@ -127,12 +116,13 @@ public class MapView extends SurfaceView {
 	public void drawLocation(PointF center) {
 		canvas = surfaceHolder.lockCanvas(null);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(bmpIcon, canvas.getWidth(), canvas.getHeight(), true), 0, 0, null);
-		mat.setScale(((float)canvas.getWidth() / (float) bmpIcon.getWidth()) * 3, ((float)canvas.getHeight() / (float)bmpIcon.getHeight()) * 3);
-		pts[0] = center.x;
-		pts[1] = center.y;
-		mat.mapPoints(pts);
-		center.set(pts[0], pts[1]);
 		drawPoint(center);
 		surfaceHolder.unlockCanvasAndPost(canvas);
 	}
+	
+	protected void onDraw(Canvas i_canvas){
+		super.onDraw(i_canvas);
+		canvas = surfaceHolder.lockCanvas(null);
+	}
+	
 }
