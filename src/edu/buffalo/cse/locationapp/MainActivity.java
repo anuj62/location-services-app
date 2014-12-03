@@ -177,6 +177,9 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
         	Intent i = new Intent(this, LocationUI.class);
         	startActivity(i);
         }
+        else if(id == R.id.action_savedata){
+    		wifiScan.saveData();
+    	}
         return super.onOptionsItemSelected(item);
     }
 
