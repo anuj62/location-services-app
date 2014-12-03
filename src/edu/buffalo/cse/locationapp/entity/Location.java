@@ -6,22 +6,24 @@ public class Location
     private String m_Tag;
     private int m_xLocation;
     private int m_yLocation;
-    private int m_MapID;
-    private int m_projectID;
+    private int m_MapID = 1;
+    private int m_projectID = 1;
 
     public Location()
     {
     	this.m_Tag = "";
         this.m_xLocation = 0;
         this.m_yLocation = 0;
-        this.m_MapID = 0;
-        this.m_projectID = 0;
+        this.m_MapID = 1;
+        this.m_projectID = 1;
     }
  
     public Location(int xLocation, int yLocation, Map map)
     {
         this.m_xLocation = xLocation;
         this.m_yLocation = yLocation;
+        this.m_MapID = 1;
+        this.m_projectID = 1;
         //this.m_MapID = map.getMapID();
         //this.m_projectID = map.getProjectID();
     }
@@ -31,6 +33,8 @@ public class Location
     	this.m_Tag = tag;
         this.m_xLocation = xLocation;
         this.m_yLocation = yLocation;
+        this.m_MapID = 1;
+        this.m_projectID = 1;
         //this.m_MapID = map.getMapID();
         //this.m_projectID = map.getProjectID();
     }

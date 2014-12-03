@@ -119,6 +119,7 @@ public class BusinessManager {
 					tempJsonObject.put("TimeStamp", fingerPrintList.get(i).getScanDateTime());
 					tempJsonObject.put("Capabilities", fingerPrintList.get(i).getCapabilities());
 					tempJsonObject.put("SignalStrength", fingerPrintList.get(i).getRSSI());
+					Log.v("saveData", "Object created");
 				}
 				catch (Exception ex) {
 					Log.e("JSON Exception", "Error creating JSON Object");
@@ -129,29 +130,44 @@ public class BusinessManager {
 			
 			try {
 				mainJsonObject.put("ScanData", scanArray);
+				Log.v("saveData", "Array created");
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
+			Log.v("saveData", "Entering External");
+			
 			if (isExternalStorageWritable()) {
+				Log.v("saveData", "Entered External");
 				try {
-					File extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
-	            	FileOutputStream out = new FileOutputStream(extFile, true);
-
+					File extFile = null;
+					FileOutputStream out = null;
+					try {
+						extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/");
+	            		out = new FileOutputStream(extFile);
+					}
+					catch (Exception ex) {
+						extFile = new File("fingerprint.json");
+						//extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
+						out = new FileOutputStream(extFile);
+					}
 	            	out.write(jsonarray.toString().getBytes());
 	            	out.flush();
 	            	out.close();
+	            	Log.v("saveData", "File Created in External");
 				}
 				catch (Exception ex) {
 					Log.e("LocalizationApp", ex.toString());
 				}
 			}
 			else {
+				Log.v("saveData", "External unavailable, entered SharedPreferences");
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	        	Editor editor = prefs.edit();
 	        	editor.putString("key", jsonarray.toString());
 	        	editor.commit();
+	        	Log.v("saveData", "Successfull Committed to SharedPreferences");
 			}
 
 			
@@ -184,6 +200,8 @@ public class BusinessManager {
 			tempSignalSample.setTag(location.getTag());
 			
 			fingerPrintList.add(tempSignalSample);
+			
+			Log.v("saveFingerprint", "Fingerprint save success");
 		}
 		
 		        

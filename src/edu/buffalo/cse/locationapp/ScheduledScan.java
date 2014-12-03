@@ -71,6 +71,7 @@ public class ScheduledScan implements Runnable {
 			if (scanLimit != 0) {
 				handler.postDelayed(this, repeatTime);
 				scanLimit--;
+				Log.v("ScheduledScan", "In training mode, scanning");
 			}
 			else 	{
 				Bundle bundle = new Bundle();
@@ -78,6 +79,8 @@ public class ScheduledScan implements Runnable {
 				bundle.putString("ListSize", "Scan Complete");
 				msg.setData(bundle);
 				this.handler.sendMessage(msg);
+				
+				Log.v("ScheduledScan", "In training mode, scan complete");
 			
 				handler = null;
 			}
@@ -99,9 +102,11 @@ public class ScheduledScan implements Runnable {
 			scanResult = wm.getScanResults();
 			
 			Location calculatedLocation = null;
+			Log.v("ScheduledScan", "In training mode, scanRSSI method");
 			
 			if ((location != null) && (isTrainingMode)) {
 				bm.saveFingerprint(location, scanResult);
+				Log.v("ScheduledScan", "In training mode, fingerprint saved");
 			}
 			else {
 				scanResult = bm.mergeSSID(scanResult);

@@ -107,6 +107,7 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
     			Toast.makeText(MainActivity.this, msg.getData().getString(Constants.DATA_INPUTTEXT), Toast.LENGTH_SHORT).show();
     			//TODO: store this variable in the scan results
     			String currentLocation = msg.getData().getString(Constants.DATA_INPUTTEXT);
+    			clickLocation.setTag(currentLocation);
     			wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, clickLocation);
             	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
     			break;
@@ -120,7 +121,7 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
     private OnTouchListener clickListener = new OnTouchListener() {
     	
 		public boolean onTouch(View v, MotionEvent event) {
-            if (true) { //mode == training_mode) {
+            if (isTrainingMode) { 
             	if (event.getAction() == MotionEvent.ACTION_DOWN){
             		MapTextInput mapText = new MapTextInput(handler);
             		mapMap.drawCircle(event.getX(), event.getY());
@@ -167,13 +168,12 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
             return true;
         }
         else if(id == R.id.training_mode) {
-        	if(item.isChecked()) {
-        		isTrainingMode = true;
-        	}
-        	else {
-        		isTrainingMode = false;
-        	}
-        }else if(id == R.id.action_ui){
+       		isTrainingMode = true;
+         }
+        else if(id == R.id.positioning_mode){
+    		isTrainingMode = false;
+    	}
+        else if(id == R.id.action_ui){
         	Intent i = new Intent(this, LocationUI.class);
         	startActivity(i);
         }
