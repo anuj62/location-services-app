@@ -101,7 +101,7 @@ public class Utils {
     		
     		for (int i = 0; i < accessPointList.size(); i++) {
     			boolean isAdded = false;
-    			for (int j = 0; i < pairList.size(); j++) {
+    			for (int j = 0; j < pairList.size(); j++) {
     				if (accessPointList.get(i).getMacAddress().equals(pairList.get(j).getAPMac())) {
     					isAdded = true;
     				}

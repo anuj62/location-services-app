@@ -56,8 +56,9 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 
 	private LocationManager lm;
 	private WifiManager wm;
-	private ScheduledScan wifiScan;
+	public ScheduledScan wifiScan;
 	private OnTaskCompleted listener;
+	public BusinessManager bm = null;
 
 	private SensorManager mSensorManager;
 	
@@ -90,6 +91,7 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0.0f, this);        
         
         wm = (WifiManager)this.getSystemService(WIFI_SERVICE);
+        bm = new BusinessManager(this);
         
         
         mapMap = (MapView) this.findViewById(R.id.dummymap);
@@ -102,14 +104,16 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
     		switch (messageType){
     		case Constants.MESSAGE_WIFI:
     			tvWifi.setText(msg.getData().getString("ListSize"));
+    			//tvWifi.setText(msg.getData().getString("Location"));
+    			Toast.makeText(MainActivity.this, msg.getData().getString("Location"), Toast.LENGTH_SHORT).show();
     			break;
     		case Constants.MESSAGE_INPUTTEXT:
     			Toast.makeText(MainActivity.this, msg.getData().getString(Constants.DATA_INPUTTEXT), Toast.LENGTH_SHORT).show();
     			//TODO: store this variable in the scan results
     			String currentLocation = msg.getData().getString(Constants.DATA_INPUTTEXT);
     			clickLocation.setTag(currentLocation);
-    			wifiScan = new ScheduledScan(getApplicationContext(), wm, handler, clickLocation);
-            	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+    			wifiScan = new ScheduledScan(bm, getApplicationContext(), wm, handler, clickLocation);
+            	handler.postDelayed(wifiScan, wifiScan.getRepeatTimeTraning());
     			break;
     			default:
     			
@@ -141,8 +145,8 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
             else {
             	// if the ScheduledScan is created without a location, then it means the program is in positioning mode
             	
-            	wifiScan = new ScheduledScan(getApplicationContext(), wm, handler);
-            	handler.postDelayed(wifiScan, wifiScan.getRepeatTime());
+            	wifiScan = new ScheduledScan(bm, getApplicationContext(), wm, handler);
+            	handler.postDelayed(wifiScan, 1000);
             	
             }
             return true;
@@ -175,7 +179,8 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
     	}
         else if(id == R.id.action_ui){
         	Intent i = new Intent(this, LocationUI.class);
-        	startActivity(i);
+        	
+        	startActivityForResult(i, 3);
         }
         else if(id == R.id.action_savedata){
     		wifiScan.saveData();
@@ -232,6 +237,21 @@ public class MainActivity extends Activity implements LocationListener, OnTaskCo
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+	}
+	
+	@Override
+	protected void onActivityResult (int requestCode, int resultCode, Intent data){
+		if(requestCode==3){
+			if(resultCode==Activity.RESULT_OK){
+			isTrainingMode = false;
+			wifiScan = new ScheduledScan(bm, getApplicationContext(), wm, handler, clickLocation);
+        	handler.postDelayed(wifiScan, wifiScan.getRepeatTimeTraning());
+			}else{
+				
+			}
+			
+			
+		}
 	}
 	
 	@Override

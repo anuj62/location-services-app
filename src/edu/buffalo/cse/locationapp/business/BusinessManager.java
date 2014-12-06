@@ -144,12 +144,15 @@ public class BusinessManager {
 					File extFile = null;
 					FileOutputStream out = null;
 					try {
-						extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/");
+						extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
 	            		out = new FileOutputStream(extFile);
 					}
 					catch (Exception ex) {
-						extFile = new File("fingerprint.json");
-						//extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
+						//extFile = new File("fingerprint.json");
+						extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/");
+						extFile.mkdirs();
+						extFile = new File(Environment.getExternalStorageDirectory(), "/android/data/localizationApp/fingerprint.json");
+						
 						out = new FileOutputStream(extFile);
 					}
 	            	out.write(jsonarray.toString().getBytes());

@@ -27,33 +27,36 @@ public class ScheduledScan implements Runnable {
 	private BusinessManager bm = null;
 	private List<ScanResult> scanResults;
 	private Handler handler;
-	private int repeatTime = 1000;
+	private int repeatTimeTraining = 1000;
+	private int repeatTimePositioning = 15000;
 	private int scanLimit = 5;
 	private Location location = null;
 	private boolean isTrainingMode = true;
+	private Location returnResult = null;
 	
 	public ScheduledScan(WifiManager wm, Handler handler) {
 		this.wm = wm;
 		this.handler = handler;
+		this.bm = bm;
 	}
 	
-	public ScheduledScan(Context context, WifiManager wm, Handler handler,  Location location)  {
+	public ScheduledScan(BusinessManager bm, Context context, WifiManager wm, Handler handler,  Location location)  {
 		this.context = context;
 		this.wm = wm;
 		this.handler = handler;
 		this.location = location;
 		this.isTrainingMode = true;
 		
-		bm = new BusinessManager(context);
+		this.bm = bm;
 	}
 	
-	public ScheduledScan(Context context, WifiManager wm, Handler handler)  {
+	public ScheduledScan(BusinessManager bm, Context context, WifiManager wm, Handler handler)  {
 		this.context = context;
 		this.wm = wm;
 		this.handler = handler;
 		this.isTrainingMode = false;
 		
-		bm = new BusinessManager(context);
+		this.bm = bm;
 	}
 	
 	public void saveData() {
@@ -69,7 +72,7 @@ public class ScheduledScan implements Runnable {
 		if (isTrainingMode) {
 			scanResults = scanRSSI();
 			if (scanLimit != 0) {
-				handler.postDelayed(this, repeatTime);
+				handler.postDelayed(this, repeatTimeTraining);
 				scanLimit--;
 				Log.v("ScheduledScan", "In training mode, scanning");
 			}
@@ -87,7 +90,7 @@ public class ScheduledScan implements Runnable {
 		}
 		else {
 			scanResults = scanRSSI();
-			handler.postDelayed(this, repeatTime);
+			handler.postDelayed(this, repeatTimePositioning);
 		}
 	}
 	
@@ -140,10 +143,13 @@ public class ScheduledScan implements Runnable {
 		return printScan.toString();
 			
 	}
-	public int getRepeatTime() {
-		return repeatTime;
+	public int getRepeatTimePositioning() {
+		return repeatTimePositioning;
+	}
+	public int getRepeatTimeTraning() {
+		return repeatTimeTraining;
 	}
 	public void setRepeatTime(int repeatTime) {
-		this.repeatTime = repeatTime;
+		this.repeatTimePositioning = repeatTime;
 	}
 }

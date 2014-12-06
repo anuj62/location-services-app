@@ -45,7 +45,7 @@ public class LocationUI extends Activity implements OnItemSelectedListener, Pedo
 	String gpsLocation;
 	NfcAdapter mNfcAdapter;
 	int count;
-	
+	int mDistance;
 	private Pedometer ped;
 	private PedometerPathMapper ppm;
 	
@@ -118,25 +118,26 @@ public class LocationUI extends Activity implements OnItemSelectedListener, Pedo
 	
 	public String getCurrentLocation(String res){
 		int distance = Integer.parseInt(res);
+		mDistance = distance;
 		String detectedlocation;
-		if(distance >= 25){
+		if(distance > 25){
 			detectedlocation = getGPSLocation();
 			mCurrentLocationView.setText(detectedlocation);
-		}else if(distance < 25 && distance >= 10){
+		}else if(distance <= 25 && distance > 10){
 			//wifi
 			//detectedlocation = getWifiLocation();
-			BusinessManager bm = new BusinessManager(this);
-			Location oCurrentloc = bm.getPosition(null);
-			String sCurrentloc = oCurrentloc.getTag();
+			setResult(Activity.RESULT_OK);
+			finish();
 			
 			
-		}else if(distance >=1 && distance < 10){
+		}else if(distance >1 && distance <= 10){
 			//wifi + pedometer
 			//detectedlocation = getFineGrainedLocation();
 			
+			//setResult(Activity.RESULT_FIRST_USER);
+			//finish();
 			
-			
-		}else if(distance < 1){
+		}else if(distance <= 1){
 			//detectedlocation = getNFCLocation();
 		}else{
 			
@@ -193,9 +194,15 @@ public class LocationUI extends Activity implements OnItemSelectedListener, Pedo
 		LocationUI.this.runOnUiThread(new Runnable() {
 			  public void run() {
 				  count++;
-				  Toast.makeText(LocationUI.this, "Scanning..."+count, Toast.LENGTH_SHORT).show();
+				 // Toast.makeText(LocationUI.this, "Scanning..."+count, Toast.LENGTH_SHORT).show();
 			  }
 			});
+		if(mDistance == 10){
+			//Toast.makeText(LocationUI.this, "Scanning..."+count, Toast.LENGTH_SHORT).show();
+			setResult(Activity.RESULT_OK);
+			
+			finish();
+		}
 		
 	}
 	
