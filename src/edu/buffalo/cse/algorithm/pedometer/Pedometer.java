@@ -126,7 +126,7 @@ public class Pedometer implements SensorEventListener {
 		if((!mIsWalking) && (event.timestamp - mLastResetTime > mResetTimePeriod)) {
 			int j = 0;
 			float min = 361, max = 0;
-			for(int i=0;i<50;i++) {
+			for(int i=1;i<=50;i++) {
 				j = (mLagSamples + mGyroCount - i) % mLagSamples;
 				if(mGyroYaws[j].yaw < min) {
 					min = mGyroYaws[j].yaw;
@@ -136,7 +136,7 @@ public class Pedometer implements SensorEventListener {
 				}
 			}
 			if(max - min <= 0.5f) {
-				mLastResetAngle = mGyroYaws[mGyroCount].yaw;
+				mLastResetAngle = mGyroYaws[(mGyroCount + (mLagSamples - 1)) % mLagSamples].yaw;
 				stop();
 				start();
 			}
