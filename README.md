@@ -1,5 +1,4 @@
-LocationApp
-===========
-Shows GPS readings, accelerometer readings.
+Indoor Localication App
+=======================
+Uses Wifi fingerprinting algorithm to localize indoors and pedometer and sensor fusion to improve energy efficiency.
 
-(Please update this readme as functionalities get added)
